@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace PexesoService
 {
-    class Program
+    [ServiceContract]
+    interface IPexesoService
     {
-        static void Main(string[] args)
-        {
-        }
+
     }
 }
