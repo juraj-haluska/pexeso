@@ -8,6 +8,7 @@ namespace PexesoApp.ViewModels
     public class ShellViewModel : Conductor<object>, IGameClient
     {
         private readonly IGameService _gameService;
+        private Player _player;
 
         public ShellViewModel()
         {
@@ -48,7 +49,16 @@ namespace PexesoApp.ViewModels
 
         private void ShowLoginScreen()
         {
-            var loginViewModel = new LoginViewModel();
+            var loginViewModel = new LoginViewModel(_gameService)
+            {
+                ExitScreen = ShowStartScreen,
+                PlayerLoggedIn = player =>
+                {
+                    _player = player;
+                    ShowPlayersScreen();
+                }
+            };
+
             ActivateItem(loginViewModel);
         }
 
@@ -59,6 +69,11 @@ namespace PexesoApp.ViewModels
                 ExitScreen = ShowStartScreen
             };
             ActivateItem(registerViewModel);
+        }
+
+        private void ShowPlayersScreen()
+        {
+            ActivateItem(new PlayersViewModel());
         }
     }
 }

@@ -37,7 +37,7 @@ namespace PexesoApp.ViewModels
                 _playerPassword = value;
                 NotifyOfPropertyChange(() => CanRegister);
             }
-    }
+        }
 
         public bool CanRegister => PlayerName?.Length >= 5 && PlayerPassword?.Length >= 5;
  
