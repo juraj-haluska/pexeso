@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameService", "GameService\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApp", "TestApp\TestApp.csproj", "{1295905C-87BE-4964-9760-EE176587B9F3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PexesoApp", "PexesoApp\PexesoApp.csproj", "{83B7F6C4-BC6E-4821-8813-90E2977616CA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{1295905C-87BE-4964-9760-EE176587B9F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1295905C-87BE-4964-9760-EE176587B9F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1295905C-87BE-4964-9760-EE176587B9F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83B7F6C4-BC6E-4821-8813-90E2977616CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83B7F6C4-BC6E-4821-8813-90E2977616CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83B7F6C4-BC6E-4821-8813-90E2977616CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83B7F6C4-BC6E-4821-8813-90E2977616CA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

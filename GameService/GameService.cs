@@ -80,8 +80,15 @@ namespace GameService
         public void AcceptInvitation(Player player)
         {
             var acceptingPlayer = PlayersOnline.GetGamePlayer(Client);
-            IGameClient client = PlayersOnline.GetGameClient(player);
-            client?.InvitationAccepted(acceptingPlayer);
+
+            var acceptingClient = PlayersOnline.RemovePlayer(acceptingPlayer);
+            var invitingClient = PlayersOnline.RemovePlayer(player);
+
+            if (acceptingClient == null || invitingClient == null) return;
+
+            PlayersInGame.AddPlayer(invitingClient, player);
+            PlayersInGame.AddPlayer(acceptingClient, acceptingPlayer);
+            invitingClient.InvitationAccepted(acceptingPlayer);
         }
 
         public void RefuseInvitation(Player player)
