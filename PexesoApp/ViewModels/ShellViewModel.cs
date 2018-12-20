@@ -4,10 +4,10 @@ using GameService.Library;
 
 namespace PexesoApp.ViewModels
 {
+    [CallbackBehavior(ConcurrencyMode = ConcurrencyMode.Reentrant, UseSynchronizationContext = false)]
     public class ShellViewModel : Conductor<object>, IGameClient
     {
         private readonly IGameService _gameService;
-        private readonly Screen _startScreen;
 
         public ShellViewModel()
         {
@@ -15,14 +15,11 @@ namespace PexesoApp.ViewModels
             var ctx = new InstanceContext(this);
             var channelFactory = new DuplexChannelFactory<IGameService>(ctx, "GameServiceEndPoint");
             _gameService = channelFactory.CreateChannel();
-
-            // create screens
-            _startScreen = new StartViewModel(_gameService);
         }
 
         protected override void OnActivate()
         {
-            ActivateItem(_startScreen);
+            ShowStartScreen();
         }
 
         public void InvitedBy(Player player, GameParams gameParams)
@@ -38,6 +35,30 @@ namespace PexesoApp.ViewModels
         public void InvitationRefused(Player player)
         {
             throw new System.NotImplementedException();
+        }
+
+        private void ShowStartScreen()
+        {
+            var startViewModel = new StartViewModel(_gameService)
+            {
+                Login = ShowLoginScreen, Register = ShowRegisterScreen
+            };
+            ActivateItem(startViewModel);
+        }
+
+        private void ShowLoginScreen()
+        {
+            var loginViewModel = new LoginViewModel();
+            ActivateItem(loginViewModel);
+        }
+
+        private void ShowRegisterScreen()
+        {
+            var registerViewModel = new RegisterViewModel(_gameService)
+            {
+                ExitScreen = ShowStartScreen
+            };
+            ActivateItem(registerViewModel);
         }
     }
 }
