@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
 using GameService.Data;
@@ -53,6 +52,16 @@ namespace GameService
             {
                 var player = ctx.Players.Single(p => p.Name.Equals(name) && p.Password.Equals(password));
                 PlayersOnline.AddPlayer(Client, player);
+
+                // notify other players
+                PlayersOnline.GetActivePlayers().ForEach(p =>
+                {
+                    if (p.Id != player.Id)
+                    {
+                        PlayersOnline.GetGameClient(p).NotifyPlayerConnected(player);
+                    }
+                });
+
                 return player;
             }
             catch
@@ -96,6 +105,31 @@ namespace GameService
             var refusingPlayer = PlayersOnline.GetGamePlayer(Client);
             IGameClient client = PlayersOnline.GetGameClient(player);
             client?.InvitationRefused(refusingPlayer);
+        }
+
+        public void DisconnectPlayer(Player player)
+        {
+            // try is here because we don't know in which store the player is
+            // player doesn't have to be in either
+            // TODO: do it the better way
+            try
+            {
+                // notify other players
+                PlayersOnline.GetActivePlayers().ForEach(p =>
+                {
+                    if (p.Id != player.Id)
+                    {
+                        PlayersOnline.GetGameClient(p).NotifyPlayerDisconnected(player);
+                    }
+                });
+
+                PlayersOnline.RemovePlayer(player);
+                PlayersInGame.RemovePlayer(player);
+            }
+            catch
+            {
+                // ignored
+            }
         }
     }
 }

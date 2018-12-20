@@ -130,5 +130,15 @@ namespace TestApp
         {
             Console.WriteLine($"Invitation refused by: {player.Name}, id: {player.Id}");
         }
+
+        public void NotifyPlayerConnected(Player player)
+        {
+            //throw new NotImplementedException();
+        }
+
+        public void NotifyPlayerDisconnected(Player player)
+        {
+            //throw new NotImplementedException();
+        }
     }
 }

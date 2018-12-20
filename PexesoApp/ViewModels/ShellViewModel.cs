@@ -1,19 +1,20 @@
 ﻿using System.ServiceModel;
+using System.Windows;
 using Caliburn.Micro;
 using GameService.Library;
 
 namespace PexesoApp.ViewModels
 {
-    [CallbackBehavior(ConcurrencyMode = ConcurrencyMode.Reentrant, UseSynchronizationContext = false)]
-    public class ShellViewModel : Conductor<object>, IGameClient
+    public class ShellViewModel : Conductor<object>
     {
+        private readonly GameEventHandler _eventHandler;
         private readonly IGameService _gameService;
-        private Player _player;
 
         public ShellViewModel()
         {
             // create wcf connection
-            var ctx = new InstanceContext(this);
+            _eventHandler = new GameEventHandler(Application.Current.Dispatcher);
+            var ctx = new InstanceContext(_eventHandler);
             var channelFactory = new DuplexChannelFactory<IGameService>(ctx, "GameServiceEndPoint");
             _gameService = channelFactory.CreateChannel();
         }
@@ -21,21 +22,6 @@ namespace PexesoApp.ViewModels
         protected override void OnActivate()
         {
             ShowStartScreen();
-        }
-
-        public void InvitedBy(Player player, GameParams gameParams)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void InvitationAccepted(Player player)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void InvitationRefused(Player player)
-        {
-            throw new System.NotImplementedException();
         }
 
         private void ShowStartScreen()
@@ -52,11 +38,7 @@ namespace PexesoApp.ViewModels
             var loginViewModel = new LoginViewModel(_gameService)
             {
                 ExitScreen = ShowStartScreen,
-                PlayerLoggedIn = player =>
-                {
-                    _player = player;
-                    ShowPlayersScreen();
-                }
+                PlayerLoggedIn = ShowPlayersScreen
             };
 
             ActivateItem(loginViewModel);
@@ -71,9 +53,9 @@ namespace PexesoApp.ViewModels
             ActivateItem(registerViewModel);
         }
 
-        private void ShowPlayersScreen()
+        private void ShowPlayersScreen(Player loggedPlayer)
         {
-            ActivateItem(new PlayersViewModel());
+            ActivateItem(new PlayersViewModel(_gameService, _eventHandler, loggedPlayer));
         }
     }
 }

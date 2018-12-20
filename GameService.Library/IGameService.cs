@@ -23,5 +23,8 @@ namespace GameService.Library
 
         [OperationContract]
         void RefuseInvitation(Player player);
+
+        [OperationContract]
+        void DisconnectPlayer(Player player);
     }
 }

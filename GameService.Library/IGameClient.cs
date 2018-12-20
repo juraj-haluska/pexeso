@@ -12,5 +12,11 @@ namespace GameService.Library
 
         [OperationContract(IsOneWay = true)]
         void InvitationRefused(Player player);
+
+        [OperationContract(IsOneWay = true)]
+        void NotifyPlayerConnected(Player player);
+
+        [OperationContract(IsOneWay = true)]
+        void NotifyPlayerDisconnected(Player player);
     }
 }
