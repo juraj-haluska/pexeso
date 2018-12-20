@@ -70,11 +70,11 @@ namespace GameService
             return PlayersOnline.GetActivePlayers();
         }
 
-        public void InvitePlayer(Player player)
+        public void InvitePlayer(Player player, GameParams gameParams)
         {
             var invitingPlayer = PlayersOnline.GetGamePlayer(Client);
             IGameClient client = PlayersOnline.GetGameClient(player);
-            client?.InvitedBy(invitingPlayer);
+            client?.InvitedBy(invitingPlayer, gameParams);
         }
 
         public void AcceptInvitation(Player player)

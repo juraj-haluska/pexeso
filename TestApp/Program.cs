@@ -95,17 +95,30 @@ namespace TestApp
                         var player = new Player();
                         player.Id = id;
 
-                        _client.InvitePlayer(player);
+                        var gameParams = new GameParams();
+                        gameParams.GameSize = GameParams.GameSizes.Size4X3;
+
+                        _client.InvitePlayer(player, gameParams);
                     }
                 }
             }
         }
 
-        public void InvitedBy(Player player)
+        public void InvitedBy(Player player, GameParams gameParams)
         {
             Console.WriteLine($"You were invited by: {player.Name}, id: {player.Id}");
+            Console.WriteLine(gameParams.GameSize);
+
             Console.WriteLine("accept? y/n");
-            _client.AcceptInvitation(player);
+            var key = Console.ReadKey().Key;
+            if (key == ConsoleKey.Y)
+            {
+                _client.AcceptInvitation(player);
+            }
+            else
+            {
+                _client.RefuseInvitation(player);
+            }
         }
 
         public void InvitationAccepted(Player player)

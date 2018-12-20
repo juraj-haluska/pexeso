@@ -5,7 +5,7 @@ namespace GameService.Library
     public interface IGameClient
     {
         [OperationContract(IsOneWay = true)]
-        void InvitedBy(Player player);
+        void InvitedBy(Player player, GameParams gameParams);
 
         [OperationContract(IsOneWay = true)]
         void InvitationAccepted(Player player);
