@@ -1,4 +1,6 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using Caliburn.Micro;
@@ -13,6 +15,8 @@ namespace PexesoApp.ViewModels
         private readonly GameEventHandler _eventHandler;
         private Player _selectedPlayer;
 
+        public ObservableCollection<GameTypeViewModel> GameTypes { get; set; }
+
         public ObservableCollection<Player> Players { get; set; }
 
         public Player SelectedPlayer
@@ -25,12 +29,14 @@ namespace PexesoApp.ViewModels
             }
         }
 
+        public GameTypeViewModel SelectedGameType { get; set; }
+
         private void RegisterEvents()
         {
             _eventHandler.InvitedByEvent += (player, gameParams) =>
             {
                 MessageBox.Show($"You were invited by player {player.Name} / {gameParams.GameSize}");
-                _gameService.AcceptInvitation(player);
+                //_gameService.AcceptInvitation(player);
             };
 
             _eventHandler.NotifyPlayerConnectedEvent += player =>
@@ -53,13 +59,16 @@ namespace PexesoApp.ViewModels
 
             Players = new ObservableCollection<Player>(_gameService.GetAvailablePlayers().Where(p => p.Id != _me.Id));
             RegisterEvents();
+
+            GameTypes = Utils.Utils.GetGameTypes();
+            SelectedGameType = GameTypes[0];
         }
 
-        public bool CanInvitePlayer => SelectedPlayer != null;
+        public bool CanInvitePlayer => SelectedPlayer != null && SelectedGameType != null;
 
         public void InvitePlayer()
         {
-            
+            _gameService.InvitePlayer(SelectedPlayer, new GameParams { GameSize = SelectedGameType.GameSize });
         }
 
         protected override void OnDeactivate(bool close)
