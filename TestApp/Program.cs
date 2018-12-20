@@ -1,31 +1,121 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ServiceModel;
+using System.Threading;
 using GameService.Library;
 
 namespace TestApp
 {
-    class Program
+    [CallbackBehavior(ConcurrencyMode = ConcurrencyMode.Reentrant, UseSynchronizationContext = false)]
+    class Program : IGameClient
     {
         static void Main(string[] args)
         {
-            InstanceContext ctx = new InstanceContext(new ClientCode());
+            new Program().Run();
+        }
 
+        static Player RegisterPlayer(IGameService game)
+        {
+            Console.WriteLine("enter your name: ");
+            var name = Console.ReadLine();
+            Console.WriteLine("enter your password");
+            var pass = Console.ReadLine();
+
+            return game.PlayerRegister(name, pass);
+        }
+
+        static Player ConnectPlayer (IGameService game)
+        {
+            Console.WriteLine("enter your name: ");
+            var name = Console.ReadLine();
+            Console.WriteLine("enter your password");
+            var pass = Console.ReadLine();
+
+            return game.PlayerConnect(name, pass);
+        }
+
+        private IGameService _client;
+
+        void Run()
+        {
+            var ctx = new InstanceContext(this);
             using (var channelFactory = new DuplexChannelFactory<IGameService>(ctx, "GameServiceEndPoint"))
             {
-                var client = channelFactory.CreateChannel();
+                _client = channelFactory.CreateChannel();
+                
+                while (Console.ReadKey().Key != ConsoleKey.X)
+                {
+                    Console.WriteLine("Enter command:");
 
-                var p = new Player("hello", "player");
+                    var cmd = Console.ReadKey().Key;
 
-                client.PlayerConnect(p);
+                    if (cmd == ConsoleKey.A)
+                    {
+                        var registered = RegisterPlayer(_client);
 
-                while(Console.ReadKey().Key != ConsoleKey.S)
-                { }
+                        if (registered != null)
+                        {
+                            Console.WriteLine("Player has been registered. ID: " + registered.Id);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Player registration error!");
+                        }
+                    }
+                    else if (cmd == ConsoleKey.B)
+                    {
+                        var player = ConnectPlayer(_client);
 
-                client.Broadcast("ahoj");
+                        if (player != null)
+                        {
+                            Console.WriteLine("Player was connected");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Player wasn't connected!");
+                        }
+                    }
+                    else if (cmd == ConsoleKey.C)
+                    {
+                        var players = _client.GetAvailablePlayers();
 
-                Console.ReadKey();
+                        Console.WriteLine("Online players: ");
+
+                        foreach (var player in players)
+                        {
+                            Console.WriteLine($"name: {player.Name} id: {player.Id}");
+                        }
+                    }
+                    else if (cmd == ConsoleKey.I)
+                    {
+                        Console.WriteLine("Type id of player to invite: ");
+                        int id;
+                        int.TryParse(Console.ReadLine(), out id);
+
+                        var player = new Player();
+                        player.Id = id;
+
+                        _client.InvitePlayer(player);
+                    }
+                }
             }
+        }
+
+        public void InvitedBy(Player player)
+        {
+            Console.WriteLine($"You were invited by: {player.Name}, id: {player.Id}");
+            Console.WriteLine("accept? y/n");
+            _client.AcceptInvitation(player);
+        }
+
+        public void InvitationAccepted(Player player)
+        {
+            Console.WriteLine($"Invitation accepted by: {player.Name}, id: {player.Id}");
+        }
+
+        public void InvitationRefused(Player player)
+        {
+            Console.WriteLine($"Invitation refused by: {player.Name}, id: {player.Id}");
         }
     }
 }

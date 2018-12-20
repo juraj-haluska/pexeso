@@ -22,9 +22,8 @@ namespace GameService.Library
             Password = password;
         }
 
-        public override string ToString()
+        public Player()
         {
-            return $"{nameof(Id)}: {Id}, {nameof(Name)}: {Name}, {nameof(Password)}: {Password}";
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.ServiceModel;
+﻿using System.Collections.Generic;
+using System.ServiceModel;
 
 namespace GameService.Library
 {
@@ -9,12 +10,18 @@ namespace GameService.Library
         Player PlayerRegister(string name, string password);
 
         [OperationContract]
-        Player PlayerLogIn(string name, string password);
+        Player PlayerConnect(string name, string password);
 
         [OperationContract]
-        void PlayerConnect(Player player);
+        List<Player> GetAvailablePlayers();
 
         [OperationContract]
-        void Broadcast(string message);
+        void InvitePlayer(Player player);
+
+        [OperationContract]
+        void AcceptInvitation(Player player);
+
+        [OperationContract]
+        void RefuseInvitation(Player player);
     }
 }

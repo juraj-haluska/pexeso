@@ -5,6 +5,12 @@ namespace GameService.Library
     public interface IGameClient
     {
         [OperationContract(IsOneWay = true)]
-         void TestMethod(string message);
+        void InvitedBy(Player player);
+
+        [OperationContract(IsOneWay = true)]
+        void InvitationAccepted(Player player);
+
+        [OperationContract(IsOneWay = true)]
+        void InvitationRefused(Player player);
     }
 }

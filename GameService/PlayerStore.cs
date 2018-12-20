@@ -4,6 +4,7 @@ using GameService.Library;
 
 namespace GameService
 {
+    // this class maps and manages connections with players
     public class PlayerStore
     {
         // lock is protecting _clients and _players
@@ -25,7 +26,19 @@ namespace GameService
             }
         }
 
-        public List<Player> GetOnlinePlayers()
+        public IGameClient RemovePlayer(Player player)
+        {
+            lock (_lock)
+            {
+                var index = _players.FindIndex(p => p.Id == player.Id);
+                _players.RemoveAt(index);
+                var gameClient = _clients[index];
+                _clients.RemoveAt(index);
+                return gameClient;
+            }
+        }
+
+        public List<Player> GetActivePlayers()
         {  
             var onlinePlayers = new List<Player>();
 
@@ -49,7 +62,7 @@ namespace GameService
             return onlinePlayers;
         }
 
-        public Player GetMe(IGameClient client)
+        public Player GetGamePlayer(IGameClient client)
         {
             lock (_lock)
             {
@@ -72,7 +85,7 @@ namespace GameService
         {
             lock (_lock)
             {
-                var position = _players.FindIndex(p => p == player);
+                var position = _players.FindIndex(p => p.Id == player.Id);
                 var clientState = (ICommunicationObject)_clients[position];
 
                 if (clientState.State == CommunicationState.Opened)
