@@ -23,6 +23,7 @@ namespace PexesoApp
         public delegate void RevealCardDel(int cardIndex, int cardValue);
         public delegate void SwapPlayerTurnDel(int card1Index, int card2Index, int card1Value, int card2Value);
         public delegate void CardPairFoundDel(int card1Index, int card2Index, int card2Value);
+        public delegate void IncomingMessageDel(Player sendingPlayer, string message);
 
         public event InvitedByDel InvitedByEvent;
         public event GameStartedDel GameStartedEvent;
@@ -33,6 +34,7 @@ namespace PexesoApp
         public event RevealCardDel RevealCardEvent;
         public event SwapPlayerTurnDel SwapPlayerTurnEvent;
         public event CardPairFoundDel CardPairFoundEvent;
+        public event IncomingMessageDel IncomingMessageEvent;
 
         public async void InvitedBy(Player player, GameParams.GameSizes gameSize)
         {
@@ -95,6 +97,13 @@ namespace PexesoApp
             if (CardPairFoundEvent == null) return;
             var par = new object[] { card1Index, card2Index, card2Value };
             await _dispatcher.BeginInvoke(CardPairFoundEvent, par);
+        }
+
+        public async void IncomingMessage(Player from, string message)
+        {
+            if (IncomingMessageEvent == null) return;
+            var par = new object[] { from, message };
+            await _dispatcher.BeginInvoke(IncomingMessageEvent, par);
         }
     }
 }

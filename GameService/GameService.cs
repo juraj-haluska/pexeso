@@ -195,5 +195,14 @@ namespace GameService
                 PlayersOnline.GetGameClient(game.SecondPlayer).RevealCard(cardIndex, game.Map[cardIndex]);
             }
         }
+
+        public void SendMessage(string message)
+        {
+            var sendingPlayer = PlayersOnline.GetGamePlayer(Client);
+            var game = GetGameHistory(sendingPlayer);
+            var receivingPlayer = game.FirstPlayer.Equals(sendingPlayer) ? game.SecondPlayer : game.FirstPlayer;
+            PlayersOnline.GetGameClient(receivingPlayer).IncomingMessage(sendingPlayer, message);
+            PlayersOnline.GetGameClient(sendingPlayer).IncomingMessage(sendingPlayer, message);
+        }
     }
 }

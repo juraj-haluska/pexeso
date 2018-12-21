@@ -17,8 +17,21 @@ namespace PexesoApp.ViewModels
         private readonly GameEventHandler _eventHandler;
         private readonly List<Button> _buttons = new List<Button>();
         private readonly List<RoutedEventHandler> _handlers = new List<RoutedEventHandler>();
+        private string _message;
 
         public bool MyTurn { get; set; }
+
+        public string Message
+        {
+            get => _message;
+            set
+            {
+                _message = value;
+                NotifyOfPropertyChange(() => Message);
+            }
+        }
+
+        public BindableCollection<string> Messages { get; set; } = new BindableCollection<string>();
 
         public GameViewModel(GameParams gameParams, Player me, IGameService gameService, GameEventHandler eventHandler)
         {
@@ -31,11 +44,19 @@ namespace PexesoApp.ViewModels
             RegisterEventHandlers();
         }
 
+        public void SendMessage()
+        {
+            if (!string.IsNullOrEmpty(Message))
+            _gameService.SendMessage(Message);
+            Message = "";
+        }
+
         protected override void OnViewReady(object view)
         {
             Utils.Utils.GetGameSize(_gameParams.GameSize, out var rows, out var cols);
 
-            var grid = (Grid) ((GameView) GetView()).Content;
+            var stackPanel = (StackPanel)((GameView)GetView()).Content;
+            var grid = (Grid) stackPanel.Children[0];
 
             // generate columns
             Enumerable.Range(0, cols).ToList().ForEach(i =>
@@ -106,6 +127,7 @@ namespace PexesoApp.ViewModels
                     EnableButtons();
                 }
             };
+            _eventHandler.IncomingMessageEvent += (player, message) => Messages.Add($"{player.Name}: {message}");
         }
 
         private void DisableButtons()

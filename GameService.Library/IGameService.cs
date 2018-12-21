@@ -29,5 +29,8 @@ namespace GameService.Library
 
         [OperationContract]
         void RevealCardRequest(Player player, int cardIndex);
+
+        [OperationContract]
+        void SendMessage(string message);
     }
 }

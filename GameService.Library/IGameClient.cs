@@ -30,5 +30,8 @@ namespace GameService.Library
 
         [OperationContract(IsOneWay = true)]
         void CardPairFound(int card1Index, int card2Index, int card2Value);
+
+        [OperationContract(IsOneWay = true)]
+        void IncomingMessage(Player from, string message);
     }
 }
