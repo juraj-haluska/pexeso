@@ -26,5 +26,8 @@ namespace GameService.Library
 
         [OperationContract]
         void DisconnectPlayer(Player player);
+
+        [OperationContract]
+        void RevealCardRequest(Player player, int cardIndex);
     }
 }

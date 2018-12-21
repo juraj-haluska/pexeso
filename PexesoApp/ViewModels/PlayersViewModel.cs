@@ -90,11 +90,5 @@ namespace PexesoApp.ViewModels
         {
             _gameService.InvitePlayer(SelectedPlayer, SelectedGameType.GameSize);
         }
-
-        protected override void OnDeactivate(bool close)
-        {
-            _gameService.DisconnectPlayer(_me);
-            base.OnDeactivate(close);
-        }
     }
 }

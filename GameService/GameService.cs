@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
 using GameService.Data;
@@ -13,10 +14,16 @@ namespace GameService
         private const int PlayerPasswordMinLength = 5;
 
         // holds players available for game
-        private static readonly PlayerStore PlayersOnline = new PlayerStore();
-    
+        private static readonly PlayerStore PlayersOnline = new PlayerStore();    
+        private static readonly SynchronizedCollection<GameState> Games = new SynchronizedCollection<GameState>();
+
         private IGameClient Client => OperationContext.Current.GetCallbackChannel<IGameClient>();
- 
+
+        private GameState GetGameHistory(Player player)
+        {
+            return Games.Single(game => game.FirstPlayer.Equals(player) || game.SecondPlayer.Equals(player));
+        }
+
         public Player RegisterPlayer(string name, string password)
         {
             // check if name and password are valid
@@ -95,11 +102,26 @@ namespace GameService
             NotifyPlayerUpdate(invitingPlayer);
             NotifyPlayerUpdate(acceptingPlayer);
 
-            var gameInitParams = new GameParams(invitingPlayer, acceptingPlayer, gameSize);           
+            var gameParams = new GameParams(invitingPlayer, acceptingPlayer, gameSize);
+            Utils.GetGameSize(gameSize, out var rows, out var cols);
+
+            // generate random map
+            var rand = new Random();
+            var elements = Enumerable.Range(1, rows * cols / 2).ToList();
+            var map = elements.Concat(elements).OrderBy(x => rand.Next()).ToArray();
+
+            var gameHistory = new GameState
+            {
+                FirstPlayer = gameParams.FirstPlayer,
+                SecondPlayer = gameParams.SecondPlayer,
+                Map = map
+            };
+
+            Games.Add(gameHistory);
 
             // callback
-            invitingClient.StartGame(gameInitParams);
-            Client.StartGame(gameInitParams);
+            invitingClient.StartGame(gameParams);
+            Client.StartGame(gameParams);
         }
 
         public void RefuseInvitation(Player player)
@@ -139,6 +161,39 @@ namespace GameService
             {
                 PlayersOnline.GetGameClient(player).NotifyPlayerUpdate(updatedPlayer);
             });
+        }
+
+        public void RevealCardRequest(Player player, int cardIndex)
+        {
+            var game = GetGameHistory(player);
+
+            if (game.RevealedCardIndex != null)
+            {
+                var previouslyRevealed = game.RevealedCardIndex.Value;
+                game.RevealedCardIndex = null;
+
+                if (game.Map[cardIndex] == game.Map[previouslyRevealed] && cardIndex != previouslyRevealed)
+                {               
+                    game.IncrementScore(player);
+                    PlayersOnline.GetGameClient(game.FirstPlayer).CardPairFound(cardIndex, previouslyRevealed, game.Map[previouslyRevealed]);
+                    PlayersOnline.GetGameClient(game.SecondPlayer).CardPairFound(cardIndex, previouslyRevealed, game.Map[previouslyRevealed]);
+
+                    if (!game.IsGameEnd()) return;
+                    Console.WriteLine("game end");
+                    Games.Remove(game);
+                }
+                else
+                {
+                    PlayersOnline.GetGameClient(game.FirstPlayer).SwapPlayerTurn(cardIndex, previouslyRevealed, game.Map[cardIndex], game.Map[previouslyRevealed]);
+                    PlayersOnline.GetGameClient(game.SecondPlayer).SwapPlayerTurn(cardIndex, previouslyRevealed, game.Map[cardIndex], game.Map[previouslyRevealed]);
+                }
+            }
+            else
+            {
+                game.RevealedCardIndex = cardIndex;
+                PlayersOnline.GetGameClient(game.FirstPlayer).RevealCard(cardIndex, game.Map[cardIndex]);
+                PlayersOnline.GetGameClient(game.SecondPlayer).RevealCard(cardIndex, game.Map[cardIndex]);
+            }
         }
     }
 }

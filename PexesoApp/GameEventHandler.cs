@@ -4,8 +4,8 @@ using GameService.Library;
 
 namespace PexesoApp
 {
-    [CallbackBehavior(ConcurrencyMode = ConcurrencyMode.Reentrant, UseSynchronizationContext = false)]    
-    class GameEventHandler : IGameClient
+    [CallbackBehavior(ConcurrencyMode = ConcurrencyMode.Reentrant, UseSynchronizationContext = false)]
+    public class GameEventHandler : IGameClient
     {
         private readonly Dispatcher _dispatcher;
 
@@ -20,6 +20,9 @@ namespace PexesoApp
         public delegate void NotifyPlayerConnectedDel(Player player);
         public delegate void NotifyPlayerDisconnectedDel(Player player);
         public delegate void NotifyPlayerUpdatedDel(Player player);
+        public delegate void RevealCardDel(int cardIndex, int cardValue);
+        public delegate void SwapPlayerTurnDel(int card1Index, int card2Index, int card1Value, int card2Value);
+        public delegate void CardPairFoundDel(int card1Index, int card2Index, int card2Value);
 
         public event InvitedByDel InvitedByEvent;
         public event GameStartedDel GameStartedEvent;
@@ -27,6 +30,9 @@ namespace PexesoApp
         public event NotifyPlayerConnectedDel NotifyPlayerConnectedEvent;
         public event NotifyPlayerDisconnectedDel NotifyPlayerDisconnectedEvent;
         public event NotifyPlayerUpdatedDel NotifyPlayerUpdatedEvent;
+        public event RevealCardDel RevealCardEvent;
+        public event SwapPlayerTurnDel SwapPlayerTurnEvent;
+        public event CardPairFoundDel CardPairFoundEvent;
 
         public async void InvitedBy(Player player, GameParams.GameSizes gameSize)
         {
@@ -68,6 +74,27 @@ namespace PexesoApp
             if (NotifyPlayerUpdatedEvent == null) return;
             var par = new object[] { player };
             await _dispatcher.BeginInvoke(NotifyPlayerUpdatedEvent, par);
+        }
+
+        public async void RevealCard(int cardIndex, int cardValue)
+        {
+            if (RevealCardEvent == null) return;
+            var par = new object[] { cardIndex, cardValue };
+            await _dispatcher.BeginInvoke(RevealCardEvent, par);
+        }
+
+        public async void SwapPlayerTurn(int card1Index, int card2Index, int card1Value, int card2Value)
+        {
+            if (SwapPlayerTurnEvent == null) return;
+            var par = new object[] { card1Index, card2Index, card1Value, card2Value};
+            await _dispatcher.BeginInvoke(SwapPlayerTurnEvent, par);
+        }
+
+        public async void CardPairFound(int card1Index, int card2Index, int card2Value)
+        {
+            if (CardPairFoundEvent == null) return;
+            var par = new object[] { card1Index, card2Index, card2Value };
+            await _dispatcher.BeginInvoke(CardPairFoundEvent, par);
         }
     }
 }

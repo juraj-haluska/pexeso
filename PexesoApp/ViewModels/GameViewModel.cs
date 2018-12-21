@@ -1,12 +1,10 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using Caliburn.Micro;
 using GameService.Library;
 using System.Linq;
-using System.Resources;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media.Imaging;
-using PexesoApp.Properties;
 using PexesoApp.Views;
 
 namespace PexesoApp.ViewModels
@@ -15,15 +13,22 @@ namespace PexesoApp.ViewModels
     {
         private readonly GameParams _gameParams;
         private readonly Player _me;
+        private readonly IGameService _gameService;
+        private readonly GameEventHandler _eventHandler;
+        private readonly List<Button> _buttons = new List<Button>();
+        private readonly List<RoutedEventHandler> _handlers = new List<RoutedEventHandler>();
 
-        public bool StartingPlayer { get; set; }
+        public bool MyTurn { get; set; }
 
-        public GameViewModel(GameParams gameParams, Player me)
+        public GameViewModel(GameParams gameParams, Player me, IGameService gameService, GameEventHandler eventHandler)
         {
             _gameParams = gameParams;
             _me = me;
+            _gameService = gameService;
+            _eventHandler = eventHandler;
 
-            StartingPlayer = gameParams.FirstPlayer.Equals(me);
+            MyTurn = gameParams.FirstPlayer.Equals(me);
+            RegisterEventHandlers();
         }
 
         protected override void OnViewReady(object view)
@@ -48,13 +53,74 @@ namespace PexesoApp.ViewModels
             foreach (var i in Enumerable.Range(0, rows * cols))
             {
                 var button = new Button {Width = 50, Height = 50};
+
                 var row = i / cols;
                 var col = i % cols;
+
                 button.Margin = new Thickness(2.5);
-                button.Content = "?";
+                button.Content = new Label {FontSize = 20, Content = "?"};
+                _handlers.Add((o, e) => _gameService.RevealCardRequest(_me, i));               
+                _buttons.Add(button);
+
                 Grid.SetRow(button, row);
                 Grid.SetColumn(button, col);
+
                 grid.Children.Add(button);    
+            }
+
+            if (MyTurn)
+            {
+                EnableButtons();
+            }
+        }
+
+        private void RegisterEventHandlers()
+        {
+            if (_eventHandler == null) return;
+
+            _eventHandler.RevealCardEvent += (index, value) => ((Label) _buttons[index].Content).Content = value.ToString();
+            _eventHandler.CardPairFoundEvent += (card1Index, card2Index, card2Value) =>
+            {
+                ((Label)_buttons[card1Index].Content).Content = card2Value.ToString();
+                _buttons[card1Index].IsEnabled = false;
+                _buttons[card2Index].IsEnabled = false;
+            };
+            _eventHandler.SwapPlayerTurnEvent += async (card1Index, card2Index, value, card2Value) =>
+            {
+                ((Label)_buttons[card1Index].Content).Content = value.ToString();
+                ((Label)_buttons[card2Index].Content).Content = card2Value.ToString();
+                DisableButtons();
+
+                await Task.Delay(1000);
+
+                ((Label) _buttons[card1Index].Content).Content = "?";
+                ((Label)_buttons[card2Index].Content).Content = "?";
+
+                if (MyTurn)
+                {
+                    MyTurn = false;
+                }
+                else
+                {
+                    MyTurn = true;
+                    EnableButtons();
+                }
+            };
+        }
+
+        private void DisableButtons()
+        {
+            for (int i = 0; i < _buttons.Count; i++)
+            {
+                _buttons[i].Click -= _handlers[i];
+            }
+        }
+
+        private void EnableButtons()
+        {
+            for (var i = 0; i < _buttons.Count; i++)
+            {
+                _buttons[i].Click += _handlers[i];
             }
         }
     }
