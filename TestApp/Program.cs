@@ -21,7 +21,7 @@ namespace TestApp
             Console.WriteLine("enter your password");
             var pass = Console.ReadLine();
 
-            return game.PlayerRegister(name, pass);
+            return game.RegisterPlayer(name, pass);
         }
 
         static Player ConnectPlayer (IGameService game)
@@ -31,7 +31,7 @@ namespace TestApp
             Console.WriteLine("enter your password");
             var pass = Console.ReadLine();
 
-            return game.PlayerConnect(name, pass);
+            return game.ConnectPlayer(name, pass);
         }
 
         private IGameService _client;
@@ -139,6 +139,11 @@ namespace TestApp
         public void NotifyPlayerDisconnected(Player player)
         {
             //throw new NotImplementedException();
+        }
+
+        public void NotifyPlayerUpdate(Player player)
+        {
+            throw new NotImplementedException();
         }
     }
 }

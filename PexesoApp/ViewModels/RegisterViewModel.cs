@@ -44,7 +44,7 @@ namespace PexesoApp.ViewModels
     
         public void Register()
         {
-            var registeredPlayer = _gameService.PlayerRegister(PlayerName, PlayerPassword);
+            var registeredPlayer = _gameService.RegisterPlayer(PlayerName, PlayerPassword);
 
             if (registeredPlayer != null)
             {

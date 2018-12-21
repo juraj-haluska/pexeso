@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
@@ -14,6 +13,8 @@ namespace PexesoApp.ViewModels
         private readonly Player _me;
         private readonly GameEventHandler _eventHandler;
         private Player _selectedPlayer;
+
+        public Action<Player, Player, GameParams> GameCreated { get; set; }
 
         public ObservableCollection<GameTypeViewModel> GameTypes { get; set; }
 
@@ -35,8 +36,18 @@ namespace PexesoApp.ViewModels
         {
             _eventHandler.InvitedByEvent += (player, gameParams) =>
             {
-                MessageBox.Show($"You were invited by player {player.Name} / {gameParams.GameSize}");
-                //_gameService.AcceptInvitation(player);
+                var message = MessageBox.Show($"You were invited by player {player.Name} / {gameParams.GameSize}", "Invitation",
+                    MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                if (message == MessageBoxResult.Yes)
+                {
+                    _gameService.AcceptInvitation(player);
+                    GameCreated?.Invoke(_me, player, gameParams);
+                }
+                else
+                {
+                    _gameService.RefuseInvitation(player);
+                }
             };
 
             _eventHandler.NotifyPlayerConnectedEvent += player =>
@@ -48,6 +59,19 @@ namespace PexesoApp.ViewModels
             {
                 var listedPlayer = Players.Single(p => p.Id == player.Id);
                 Players.Remove(listedPlayer);
+            };
+
+            _eventHandler.InvitationAcceptedEvent += player =>
+            {
+                GameCreated?.Invoke(_me, player, new GameParams { GameSize = SelectedGameType.GameSize });
+            };
+
+            _eventHandler.NotifyPlayerUpdatedEvent += player =>
+            {
+                if (Players.Remove(player))
+                {
+                    Players.Add(player);
+                }
             };
         }
 

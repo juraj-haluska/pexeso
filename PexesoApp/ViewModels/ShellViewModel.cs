@@ -40,7 +40,6 @@ namespace PexesoApp.ViewModels
                 ExitScreen = ShowStartScreen,
                 PlayerLoggedIn = ShowPlayersScreen
             };
-
             ActivateItem(loginViewModel);
         }
 
@@ -55,7 +54,19 @@ namespace PexesoApp.ViewModels
 
         private void ShowPlayersScreen(Player loggedPlayer)
         {
-            ActivateItem(new PlayersViewModel(_gameService, _eventHandler, loggedPlayer));
+            var playersViewModel = new PlayersViewModel(_gameService, _eventHandler, loggedPlayer)
+            {
+                GameCreated = (player, player1, gameParams) => { ShowGameScreen(); }
+            };
+
+            ActivateItem(playersViewModel);
+        }
+
+        private void ShowGameScreen()
+        {
+            var gameViewModel = new GameViewModel();
+
+            ActivateItem(gameViewModel);
         }
     }
 }

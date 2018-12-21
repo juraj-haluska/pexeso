@@ -28,6 +28,11 @@ namespace GameService
 
         public IGameClient RemovePlayer(Player player)
         {
+            if (player == null)
+            {
+                return null;
+            }
+
             lock (_lock)
             {
                 var index = _players.FindIndex(p => p.Id == player.Id);
@@ -64,6 +69,11 @@ namespace GameService
 
         public Player GetGamePlayer(IGameClient client)
         {
+            if (client == null)
+            {
+                return null;
+            }
+
             lock (_lock)
             {
                 var position = _clients.FindIndex(gameClient => gameClient == client);
@@ -89,6 +99,11 @@ namespace GameService
 
         public IGameClient GetGameClient(Player player)
         {
+            if (player == null)
+            {
+                return null;
+            }
+
             lock (_lock)
             {
                 var position = _players.FindIndex(p => p.Id == player.Id);

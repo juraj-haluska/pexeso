@@ -7,10 +7,10 @@ namespace GameService.Library
     public interface IGameService
     {
         [OperationContract]
-        Player PlayerRegister(string name, string password);
+        Player RegisterPlayer(string name, string password);
 
         [OperationContract]
-        Player PlayerConnect(string name, string password);
+        Player ConnectPlayer(string name, string password);
 
         [OperationContract]
         List<Player> GetAvailablePlayers();

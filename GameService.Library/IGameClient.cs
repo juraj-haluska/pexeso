@@ -18,5 +18,8 @@ namespace GameService.Library
 
         [OperationContract(IsOneWay = true)]
         void NotifyPlayerDisconnected(Player player);
+
+        [OperationContract(IsOneWay = true)]
+        void NotifyPlayerUpdate(Player player);
     }
 }

@@ -20,14 +20,14 @@
             <ColumnDefinition Width="150"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-
+ 
         <!-- Row 1 -->
         <ListBox Grid.Row="1" Grid.Column="1" Margin="5,5,5,5"
                  ItemsSource="{ Binding Players}"
                  SelectedItem="{ Binding SelectedPlayer}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Label Content="{Binding Name}"/>
+                    <Label Content="{Binding Name}" Visibility="{ Binding !InGame}"/>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>

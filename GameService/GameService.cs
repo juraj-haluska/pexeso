@@ -15,12 +15,9 @@ namespace GameService
         // holds players available for game
         private static readonly PlayerStore PlayersOnline = new PlayerStore();
     
-        // holds players currently in game
-        private static readonly PlayerStore PlayersInGame = new PlayerStore();
-
         private IGameClient Client => OperationContext.Current.GetCallbackChannel<IGameClient>();
  
-        public Player PlayerRegister(string name, string password)
+        public Player RegisterPlayer(string name, string password)
         {
             // check if name and password are valid
             if (name.Length < PlayerNameMinLength || password.Length < PlayerPasswordMinLength)
@@ -44,7 +41,7 @@ namespace GameService
             }
         }
 
-        public Player PlayerConnect(string name, string password)
+        public Player ConnectPlayer(string name, string password)
         {
             var ctx = new GameContext();
 
@@ -76,34 +73,36 @@ namespace GameService
 
         public List<Player> GetAvailablePlayers()
         {
-            return PlayersOnline.GetActivePlayers();
+            return PlayersOnline.GetActivePlayers().Where(p => p.InGame == false).ToList();
         }
 
         public void InvitePlayer(Player player, GameParams gameParams)
         {
             var invitingPlayer = PlayersOnline.GetGamePlayer(Client);
-            IGameClient client = PlayersOnline.GetGameClient(player);
+            var client = PlayersOnline.GetGameClient(player);
             client?.InvitedBy(invitingPlayer, gameParams);
         }
 
-        public void AcceptInvitation(Player player)
+        public void AcceptInvitation(Player invitingPlayer)
         {
+            var invitingClient = PlayersOnline.GetGameClient(invitingPlayer);
             var acceptingPlayer = PlayersOnline.GetGamePlayer(Client);
 
-            var acceptingClient = PlayersOnline.RemovePlayer(acceptingPlayer);
-            var invitingClient = PlayersOnline.RemovePlayer(player);
+            // update players state - hide these in UI
+            PlayersOnline.GetGamePlayer(invitingClient).InGame = true;
+            acceptingPlayer.InGame = true;
 
-            if (acceptingClient == null || invitingClient == null) return;
+            NotifyPlayerUpdate(invitingPlayer);
+            NotifyPlayerUpdate(acceptingPlayer);
 
-            PlayersInGame.AddPlayer(invitingClient, player);
-            PlayersInGame.AddPlayer(acceptingClient, acceptingPlayer);
+            // callback
             invitingClient.InvitationAccepted(acceptingPlayer);
         }
 
         public void RefuseInvitation(Player player)
         {
             var refusingPlayer = PlayersOnline.GetGamePlayer(Client);
-            IGameClient client = PlayersOnline.GetGameClient(player);
+            var client = PlayersOnline.GetGameClient(player);
             client?.InvitationRefused(refusingPlayer);
         }
 
@@ -124,12 +123,19 @@ namespace GameService
                 });
 
                 PlayersOnline.RemovePlayer(player);
-                PlayersInGame.RemovePlayer(player);
             }
             catch
             {
                 // ignored
             }
+        }
+
+        private void NotifyPlayerUpdate(Player updatedPlayer)
+        {
+            PlayersOnline.GetActivePlayers().ForEach(player =>
+            {
+                PlayersOnline.GetGameClient(player).NotifyPlayerUpdate(updatedPlayer);
+            });
         }
     }
 }

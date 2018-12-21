@@ -45,7 +45,7 @@ namespace PexesoApp.ViewModels
 
         public void Login()
         {
-            var player = _gameService.PlayerConnect(PlayerName, PlayerPassword);
+            var player = _gameService.ConnectPlayer(PlayerName, PlayerPassword);
 
             if (player != null)
             {
