@@ -6,9 +6,6 @@
              xmlns:local="clr-namespace:PexesoApp.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-        <StackPanel>
-            <Label Name="StartingPlayer" />
-        </StackPanel>
-    </Grid>
+    <Grid Margin="10,10,10,10"/>
+
 </UserControl>
