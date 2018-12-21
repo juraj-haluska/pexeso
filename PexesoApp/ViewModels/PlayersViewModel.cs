@@ -52,12 +52,14 @@ namespace PexesoApp.ViewModels
             _eventHandler.NotifyPlayerConnectedEvent += player =>
             {
                 Players.Add(player);
+                NotifyOfPropertyChange(() => CanInviteRandom);
             };
 
             _eventHandler.NotifyPlayerDisconnectedEvent += player =>
             {
                 var listedPlayer = Players.Single(p => p.Id == player.Id);
                 Players.Remove(listedPlayer);
+                NotifyOfPropertyChange(() => CanInviteRandom);
             };
 
             _eventHandler.GameStartedEvent += gameParams => GameCreated?.Invoke(gameParams, _me);
@@ -66,7 +68,11 @@ namespace PexesoApp.ViewModels
             {
                 if (Players.Remove(player))
                 {
-                    Players.Add(player);
+                    if (!player.InGame)
+                    {
+                        Players.Add(player);
+                    }
+                    NotifyOfPropertyChange(() => CanInviteRandom);
                 }
             };
         }
@@ -86,9 +92,18 @@ namespace PexesoApp.ViewModels
 
         public bool CanInvitePlayer => SelectedPlayer != null && SelectedGameType != null;
 
+        public bool CanInviteRandom => Players.Count > 0;
+
         public void InvitePlayer()
         {
             _gameService.InvitePlayer(SelectedPlayer, SelectedGameType.GameSize);
+        }
+
+        public void InviteRandom()
+        {
+            if (Players.Count <= 0) return;
+            SelectedPlayer = Players[new Random().Next(0, Players.Count - 1)];
+            InvitePlayer();
         }
     }
 }

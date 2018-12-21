@@ -96,9 +96,11 @@ namespace GameService
             var acceptingPlayer = PlayersOnline.GetGamePlayer(Client);
 
             // update players state - hide these in UI
-            PlayersOnline.GetGamePlayer(invitingClient).InGame = true;
+            invitingPlayer = PlayersOnline.GetGamePlayer(invitingClient);
+            invitingPlayer.InGame = true;
             acceptingPlayer.InGame = true;
 
+            // notify clients
             NotifyPlayerUpdate(invitingPlayer);
             NotifyPlayerUpdate(acceptingPlayer);
 

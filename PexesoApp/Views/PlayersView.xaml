@@ -27,7 +27,7 @@
                  SelectedItem="{ Binding SelectedPlayer}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Label Content="{Binding Name}" Visibility="{ Binding !InGame}"/>
+                    <Label Content="{Binding Name}"/>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
@@ -43,6 +43,7 @@
         </ListBox>
 
         <!-- Row 2 -->
-        <Button Grid.Row="2" Grid.Column="2" Margin="5,5,5,5" Content="Invite" Name="InvitePlayer"/>
+        <Button Grid.Row="2" Grid.Column="1" Margin="5,5,5,5" Content="Invite" Name="InvitePlayer"/>
+        <Button Grid.Row="2" Grid.Column="2" Margin="5,5,5,5" Content="Invite Random" Name="InviteRandom"/>
     </Grid>
 </UserControl>
