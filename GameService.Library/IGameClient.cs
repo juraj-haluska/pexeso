@@ -36,5 +36,8 @@ namespace GameService.Library
 
         [OperationContract(IsOneWay = true)]
         void GameTimeout();
+
+        [OperationContract(IsOneWay = true)]
+        void GameFinished(GameResult result);
     }
 }

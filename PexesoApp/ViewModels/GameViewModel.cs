@@ -7,14 +7,16 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using PexesoApp.Views;
-using System.Timers;
 using System.Windows.Threading;
+using GameService.Library.Utils;
 using Action = System.Action;
 
 namespace PexesoApp.ViewModels
 {
     public class GameViewModel : Screen
     {
+        private const int Timeout = 60;
+
         private readonly GameParams _gameParams;
         private readonly Player _me;
         private readonly IGameService _gameService;
@@ -26,7 +28,7 @@ namespace PexesoApp.ViewModels
 
         public Action Exit { get; set; }
 
-        public Action GameResult { get; set; }
+        public Action GameFinished { get; set; }
 
         public bool MyTurn { get; set; }
 
@@ -49,10 +51,11 @@ namespace PexesoApp.ViewModels
             _gameService = gameService;
             _eventHandler = eventHandler;
 
-            ResetTimer();
-
             MyTurn = gameParams.FirstPlayer.Equals(me);
             RegisterEventHandlers();
+
+            ResetTimer();
+            _timer.Start();
         }
 
         public void SendMessage()
@@ -64,7 +67,7 @@ namespace PexesoApp.ViewModels
 
         protected override void OnViewReady(object view)
         {
-            Utils.Utils.GetGameSize(_gameParams.GameSize, out var rows, out var cols);
+            Utils.GetGameSize(_gameParams.GameSize, out var rows, out var cols);
 
             var stackPanel = (StackPanel)((GameView)GetView()).Content;
             var grid = (Grid) stackPanel.Children[0];
@@ -115,12 +118,14 @@ namespace PexesoApp.ViewModels
                 ((Label)_buttons[index].Content).Content = value.ToString();
                 ResetTimer();
             };
+
             _eventHandler.CardPairFoundEvent += (card1Index, card2Index, card2Value) =>
             {
                 ((Label)_buttons[card1Index].Content).Content = card2Value.ToString();
                 _buttons[card1Index].IsEnabled = false;
                 _buttons[card2Index].IsEnabled = false;
             };
+
             _eventHandler.SwapPlayerTurnEvent += async (card1Index, card2Index, value, card2Value) =>
             {
                 ((Label)_buttons[card1Index].Content).Content = value.ToString();
@@ -142,7 +147,9 @@ namespace PexesoApp.ViewModels
                     EnableButtons();
                 }
             };
+
             _eventHandler.IncomingMessageEvent += (player, message) => Messages.Add($"{player.Name}: {message}");
+
             _eventHandler.GameTimeoutEvent += () =>
             {
                 _gameService.DisconnectPlayer(_me);
@@ -150,12 +157,18 @@ namespace PexesoApp.ViewModels
                 Exit();
             };
 
+            _eventHandler.GameFinishedEvent += result =>
+            {
+                _gameService.DisconnectPlayer(_me);
+                var message = Utils.GetGameResult(result);
+                MessageBox.Show($"The game has ended. You are {message}.", "Game ended", MessageBoxButton.OK, MessageBoxImage.Information);
+                GameFinished();
+            };
+
             _timer.Tick += (sender, args) =>
             {
                 _gameService.GameTimeout();
             };
-
-            _timer.Start();
         }
 
         private void DisableButtons()
@@ -176,7 +189,7 @@ namespace PexesoApp.ViewModels
 
         private void ResetTimer()
         {
-            _timer.Interval = TimeSpan.FromSeconds(10);
+            _timer.Interval = TimeSpan.FromSeconds(Timeout);
         }
     }
 }

@@ -75,7 +75,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="GameEventHandler.cs" />
-    <Compile Include="Utils\Utils.cs" />
     <Compile Include="ViewModels\GameTypeViewModel.cs" />
     <Compile Include="ViewModels\GameViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />

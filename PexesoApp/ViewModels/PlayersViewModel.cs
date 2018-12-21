@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using Caliburn.Micro;
 using GameService.Library;
+using GameService.Library.Utils;
 
 namespace PexesoApp.ViewModels
 {
@@ -16,7 +18,7 @@ namespace PexesoApp.ViewModels
 
         public Action<GameParams, Player> GameCreated { get; set; }
 
-        public ObservableCollection<GameTypeViewModel> GameTypes { get; set; }
+        public List<GameTypeViewModel> GameTypes { get; set; } = new List<GameTypeViewModel>();
 
         public ObservableCollection<Player> Players { get; set; }
 
@@ -93,7 +95,12 @@ namespace PexesoApp.ViewModels
             Players = new ObservableCollection<Player>(_gameService.GetAvailablePlayers().Where(p => p.Id != _me.Id));
             RegisterEvents();
 
-            GameTypes = Utils.Utils.GetGameTypes();
+            foreach (var value in Enum.GetValues(typeof(GameParams.GameSizes)))
+            {
+                var gameSize = (GameParams.GameSizes) value;
+                GameTypes.Add(new GameTypeViewModel { GameSize = gameSize, Name = Utils.GetGameTypeName(gameSize) });
+            }
+
             SelectedGameType = GameTypes[0];
         }
 

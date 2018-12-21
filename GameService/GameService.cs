@@ -95,7 +95,7 @@ namespace GameService
             var invitingClient = PlayersOnline.GetGameClient(invitingPlayer);
             var acceptingPlayer = PlayersOnline.GetGamePlayer(Client);
 
-            // update players state - hide these in UI
+            // update players state - remove these in from list in PlayersView
             invitingPlayer = PlayersOnline.GetGamePlayer(invitingClient);
             invitingPlayer.InGame = true;
             acceptingPlayer.InGame = true;
@@ -105,21 +105,9 @@ namespace GameService
             NotifyPlayerUpdate(acceptingPlayer);
 
             var gameParams = new GameParams(invitingPlayer, acceptingPlayer, gameSize);
-            Utils.GetGameSize(gameSize, out var rows, out var cols);
+            var newGame = new GameState(gameParams.FirstPlayer, gameParams.SecondPlayer, gameSize);
 
-            // generate random map
-            var rand = new Random();
-            var elements = Enumerable.Range(1, rows * cols / 2).ToList();
-            var map = elements.Concat(elements).OrderBy(x => rand.Next()).ToArray();
-
-            var gameHistory = new GameState
-            {
-                FirstPlayer = gameParams.FirstPlayer,
-                SecondPlayer = gameParams.SecondPlayer,
-                Map = map
-            };
-
-            Games.Add(gameHistory);
+            Games.Add(newGame);
 
             // callback
             invitingClient.StartGame(gameParams);
@@ -157,14 +145,6 @@ namespace GameService
             }
         }
 
-        private void NotifyPlayerUpdate(Player updatedPlayer)
-        {
-            PlayersOnline.GetActivePlayers().ForEach(player =>
-            {
-                PlayersOnline.GetGameClient(player).NotifyPlayerUpdate(updatedPlayer);
-            });
-        }
-
         public void RevealCardRequest(Player player, int cardIndex)
         {
             var game = GetGameHistory(player);
@@ -177,12 +157,13 @@ namespace GameService
                 if (game.Map[cardIndex] == game.Map[previouslyRevealed] && cardIndex != previouslyRevealed)
                 {               
                     game.IncrementScore(player);
-                    PlayersOnline.GetGameClient(game.FirstPlayer).CardPairFound(cardIndex, previouslyRevealed, game.Map[previouslyRevealed]);
-                    PlayersOnline.GetGameClient(game.SecondPlayer).CardPairFound(cardIndex, previouslyRevealed, game.Map[previouslyRevealed]);
+                    var firstClient = PlayersOnline.GetGameClient(game.FirstPlayer);
+                    var secondClient = PlayersOnline.GetGameClient(game.SecondPlayer);
+                    firstClient.CardPairFound(cardIndex, previouslyRevealed, game.Map[previouslyRevealed]);
+                    secondClient.CardPairFound(cardIndex, previouslyRevealed, game.Map[previouslyRevealed]);
 
                     if (!game.IsGameEnd()) return;
-                    Console.WriteLine("game end");
-                    Games.Remove(game);
+                    GameFinished(game, firstClient, secondClient);
                 }
                 else
                 {
@@ -220,6 +201,51 @@ namespace GameService
             Games.Remove(game);                
             client1.GameTimeout();
             client2.GameTimeout();
+        }
+
+        private void GameFinished(GameState game, IGameClient firstClient, IGameClient secondClient)
+        {
+            if (game.FirstPlayerScore == game.SecondPlayerScore)
+            {
+                firstClient.GameFinished(GameResult.FiftyFifty);
+                secondClient.GameFinished(GameResult.FiftyFifty);
+            }
+            else if (game.FirstPlayerScore > game.SecondPlayerScore)
+            {
+                firstClient.GameFinished(GameResult.Win);
+                secondClient.GameFinished(GameResult.Lose);
+            }
+            else
+            {
+                firstClient.GameFinished(GameResult.Lose);
+                secondClient.GameFinished(GameResult.Win);
+            }
+
+            game.GameEnd = DateTime.Now;
+
+            using (var ctx = new GameContext())
+            {
+                ctx.Games.Add(game);
+                ctx.SaveChanges();
+            }
+
+            Games.Remove(game);
+        }
+
+        private void NotifyPlayerUpdate(Player updatedPlayer)
+        {
+            PlayersOnline.GetActivePlayers().ForEach(player =>
+            {
+                PlayersOnline.GetGameClient(player).NotifyPlayerUpdate(updatedPlayer);
+            });
+        }
+
+        public List<GameState> GetGamesStatistics()
+        {
+            using (var ctx = new GameContext())
+            {
+                return ctx.Games.ToList();
+            }
         }
     }
 }

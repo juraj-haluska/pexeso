@@ -1,27 +1,31 @@
-﻿using System.Collections.ObjectModel;
-using GameService.Library;
-using PexesoApp.ViewModels;
-
-namespace PexesoApp.Utils
+﻿namespace GameService.Library.Utils
 {
-    public class Utils
+    public static class Utils
     {
-        public static ObservableCollection<GameTypeViewModel> GetGameTypes()
+        public static string GetGameTypeName(GameParams.GameSizes gameSize)
         {
-            var items = new ObservableCollection<GameTypeViewModel>
+            switch (gameSize)
             {
-                new GameTypeViewModel {GameSize = GameParams.GameSizes.Size3X2, Name = "3 x 2"},
-                new GameTypeViewModel {GameSize = GameParams.GameSizes.Size4X3, Name = "4 x 3"},
-                new GameTypeViewModel {GameSize = GameParams.GameSizes.Size4X4, Name = "4 x 4"},
-                new GameTypeViewModel {GameSize = GameParams.GameSizes.Size5X4, Name = "5 x 4"},
-                new GameTypeViewModel {GameSize = GameParams.GameSizes.Size6X5, Name = "6 x 5"},
-                new GameTypeViewModel {GameSize = GameParams.GameSizes.Size6X6, Name = "6 x 6"},
-                new GameTypeViewModel {GameSize = GameParams.GameSizes.Size7X6, Name = "7 x 6"},
-                new GameTypeViewModel {GameSize = GameParams.GameSizes.Size8X7, Name = "8 x 7"},
-                new GameTypeViewModel {GameSize = GameParams.GameSizes.Size8X8, Name = "8 x 8"}
-            };
-
-            return items;
+                case GameParams.GameSizes.Size3X2:
+                    return "3 x 2";
+                case GameParams.GameSizes.Size4X3:
+                    return "3 x 2";
+                case GameParams.GameSizes.Size4X4:
+                    return "4 x 4"; ;
+                case GameParams.GameSizes.Size5X4:
+                    return "5 x 4";
+                case GameParams.GameSizes.Size6X5:
+                    return "6 x 5";
+                case GameParams.GameSizes.Size6X6:
+                    return "6 x 6";
+                case GameParams.GameSizes.Size7X6:
+                    return "7 x 6";
+                case GameParams.GameSizes.Size8X7:
+                    return "8 x 7";
+                case GameParams.GameSizes.Size8X8:
+                default:
+                    return "8 x 8";
+            }
         }
 
         public static void GetGameSize(GameParams.GameSizes gameSize, out int rows, out int cols)
@@ -65,6 +69,20 @@ namespace PexesoApp.Utils
                     rows = 8;
                     cols = 8;
                     return;
+            }
+        }
+
+        public static string GetGameResult(GameResult result)
+        {
+            switch (result)
+            {
+                case GameResult.Win:
+                    return "winner";
+                case GameResult.Lose:
+                    return "looser";
+                case GameResult.FiftyFifty:  
+                default:
+                    return "as good as your opponent";
             }
         }
     }

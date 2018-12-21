@@ -36,6 +36,8 @@ namespace PexesoApp
 
         public delegate void GameTimeoutDel();
 
+        public delegate void GameFinishedDel(GameResult result);
+
         public event InvitedByDel InvitedByEvent;
 
         public event GameStartedDel GameStartedEvent;
@@ -57,6 +59,8 @@ namespace PexesoApp
         public event IncomingMessageDel IncomingMessageEvent;
 
         public event GameTimeoutDel GameTimeoutEvent;
+
+        public event GameFinishedDel GameFinishedEvent;
 
         public async void InvitedBy(Player player, GameParams.GameSizes gameSize)
         {
@@ -132,6 +136,13 @@ namespace PexesoApp
         {
             if (GameTimeoutEvent == null) return;
             await _dispatcher.BeginInvoke(GameTimeoutEvent);
+        }
+
+        public async void GameFinished(GameResult result)
+        {
+            if (GameFinishedEvent == null) return;
+            var par = new object[] { result };
+            await _dispatcher.BeginInvoke(GameFinishedEvent, par);
         }
     }
 }

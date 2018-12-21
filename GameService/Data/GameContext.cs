@@ -6,5 +6,7 @@ namespace GameService.Data
     public class GameContext : DbContext
     {
         public DbSet<Player> Players { get; set; }
+
+        public DbSet<GameState> Games { get; set; }
     }
 }

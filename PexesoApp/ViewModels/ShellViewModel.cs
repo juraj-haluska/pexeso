@@ -63,8 +63,11 @@ namespace PexesoApp.ViewModels
 
         private void ShowGameScreen(GameParams gameParams, Player me)
         {
-            var gameViewModel = new GameViewModel(gameParams, me, _gameService, _eventHandler);
-            gameViewModel.Exit = () => TryClose();
+            var gameViewModel = new GameViewModel(gameParams, me, _gameService, _eventHandler)
+            {
+                Exit = () => TryClose(),
+                GameFinished = () => TryClose()
+            };
             ActivateItem(gameViewModel);
         }
     }
