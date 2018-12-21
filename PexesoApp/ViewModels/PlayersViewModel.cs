@@ -57,9 +57,16 @@ namespace PexesoApp.ViewModels
 
             _eventHandler.NotifyPlayerDisconnectedEvent += player =>
             {
-                var listedPlayer = Players.Single(p => p.Id == player.Id);
-                Players.Remove(listedPlayer);
-                NotifyOfPropertyChange(() => CanInviteRandom);
+                try
+                {
+                    var listedPlayer = Players.Single(p => p.Id == player.Id);
+                    Players.Remove(listedPlayer);
+                    NotifyOfPropertyChange(() => CanInviteRandom);
+                }
+                catch
+                {
+                    // ignored
+                }
             };
 
             _eventHandler.GameStartedEvent += gameParams => GameCreated?.Invoke(gameParams, _me);

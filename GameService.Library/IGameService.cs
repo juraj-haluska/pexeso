@@ -32,5 +32,8 @@ namespace GameService.Library
 
         [OperationContract]
         void SendMessage(string message);
+
+        [OperationContract]
+        void GameTimeout();
     }
 }

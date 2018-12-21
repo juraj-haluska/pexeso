@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Caliburn.Micro;
 using GameService.Library;
 using System.Linq;
@@ -6,6 +7,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using PexesoApp.Views;
+using System.Timers;
+using System.Windows.Threading;
+using Action = System.Action;
 
 namespace PexesoApp.ViewModels
 {
@@ -17,7 +21,12 @@ namespace PexesoApp.ViewModels
         private readonly GameEventHandler _eventHandler;
         private readonly List<Button> _buttons = new List<Button>();
         private readonly List<RoutedEventHandler> _handlers = new List<RoutedEventHandler>();
+        private readonly DispatcherTimer _timer = new DispatcherTimer();
         private string _message;
+
+        public Action Exit { get; set; }
+
+        public Action GameResult { get; set; }
 
         public bool MyTurn { get; set; }
 
@@ -39,6 +48,8 @@ namespace PexesoApp.ViewModels
             _me = me;
             _gameService = gameService;
             _eventHandler = eventHandler;
+
+            ResetTimer();
 
             MyTurn = gameParams.FirstPlayer.Equals(me);
             RegisterEventHandlers();
@@ -99,7 +110,11 @@ namespace PexesoApp.ViewModels
         {
             if (_eventHandler == null) return;
 
-            _eventHandler.RevealCardEvent += (index, value) => ((Label) _buttons[index].Content).Content = value.ToString();
+            _eventHandler.RevealCardEvent += (index, value) =>
+            {
+                ((Label)_buttons[index].Content).Content = value.ToString();
+                ResetTimer();
+            };
             _eventHandler.CardPairFoundEvent += (card1Index, card2Index, card2Value) =>
             {
                 ((Label)_buttons[card1Index].Content).Content = card2Value.ToString();
@@ -128,6 +143,19 @@ namespace PexesoApp.ViewModels
                 }
             };
             _eventHandler.IncomingMessageEvent += (player, message) => Messages.Add($"{player.Name}: {message}");
+            _eventHandler.GameTimeoutEvent += () =>
+            {
+                _gameService.DisconnectPlayer(_me);
+                MessageBox.Show("Game has ended (timeout).", "Game ended", MessageBoxButton.OK, MessageBoxImage.Warning);
+                Exit();
+            };
+
+            _timer.Tick += (sender, args) =>
+            {
+                _gameService.GameTimeout();
+            };
+
+            _timer.Start();
         }
 
         private void DisableButtons()
@@ -144,6 +172,11 @@ namespace PexesoApp.ViewModels
             {
                 _buttons[i].Click += _handlers[i];
             }
+        }
+
+        private void ResetTimer()
+        {
+            _timer.Interval = TimeSpan.FromSeconds(10);
         }
     }
 }

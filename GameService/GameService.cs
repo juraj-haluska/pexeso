@@ -206,5 +206,20 @@ namespace GameService
             PlayersOnline.GetGameClient(receivingPlayer).IncomingMessage(sendingPlayer, message);
             PlayersOnline.GetGameClient(sendingPlayer).IncomingMessage(sendingPlayer, message);
         }
+
+        public void GameTimeout()
+        {
+            var player = PlayersOnline.GetGamePlayer(Client);
+
+            if (player == null) return;
+            var game = GetGameHistory(player);
+
+            if (game == null) return;
+            var client1 = PlayersOnline.GetGameClient(game.FirstPlayer);
+            var client2 = PlayersOnline.GetGameClient(game.SecondPlayer);
+            Games.Remove(game);                
+            client1.GameTimeout();
+            client2.GameTimeout();
+        }
     }
 }

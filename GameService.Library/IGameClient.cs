@@ -33,5 +33,8 @@ namespace GameService.Library
 
         [OperationContract(IsOneWay = true)]
         void IncomingMessage(Player from, string message);
+
+        [OperationContract(IsOneWay = true)]
+        void GameTimeout();
     }
 }

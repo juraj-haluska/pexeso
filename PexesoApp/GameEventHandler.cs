@@ -15,26 +15,48 @@ namespace PexesoApp
         }
 
         public delegate void InvitedByDel(Player player, GameParams.GameSizes gameSize);
+
         public delegate void GameStartedDel(GameParams gameParams);
+
         public delegate void InvitationRefusedDel(Player player);
+
         public delegate void NotifyPlayerConnectedDel(Player player);
+
         public delegate void NotifyPlayerDisconnectedDel(Player player);
+
         public delegate void NotifyPlayerUpdatedDel(Player player);
+
         public delegate void RevealCardDel(int cardIndex, int cardValue);
+
         public delegate void SwapPlayerTurnDel(int card1Index, int card2Index, int card1Value, int card2Value);
+
         public delegate void CardPairFoundDel(int card1Index, int card2Index, int card2Value);
+
         public delegate void IncomingMessageDel(Player sendingPlayer, string message);
 
+        public delegate void GameTimeoutDel();
+
         public event InvitedByDel InvitedByEvent;
+
         public event GameStartedDel GameStartedEvent;
+
         public event InvitationRefusedDel InvitationRefusedEvent;
+
         public event NotifyPlayerConnectedDel NotifyPlayerConnectedEvent;
+
         public event NotifyPlayerDisconnectedDel NotifyPlayerDisconnectedEvent;
+
         public event NotifyPlayerUpdatedDel NotifyPlayerUpdatedEvent;
+
         public event RevealCardDel RevealCardEvent;
+
         public event SwapPlayerTurnDel SwapPlayerTurnEvent;
+
         public event CardPairFoundDel CardPairFoundEvent;
+
         public event IncomingMessageDel IncomingMessageEvent;
+
+        public event GameTimeoutDel GameTimeoutEvent;
 
         public async void InvitedBy(Player player, GameParams.GameSizes gameSize)
         {
@@ -104,6 +126,12 @@ namespace PexesoApp
             if (IncomingMessageEvent == null) return;
             var par = new object[] { from, message };
             await _dispatcher.BeginInvoke(IncomingMessageEvent, par);
+        }
+
+        public async void GameTimeout()
+        {
+            if (GameTimeoutEvent == null) return;
+            await _dispatcher.BeginInvoke(GameTimeoutEvent);
         }
     }
 }
