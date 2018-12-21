@@ -5,10 +5,10 @@ namespace GameService.Library
     public interface IGameClient
     {
         [OperationContract(IsOneWay = true)]
-        void InvitedBy(Player player, GameParams gameParams);
+        void InvitedBy(Player player, GameParams.GameSizes gameSize);
 
         [OperationContract(IsOneWay = true)]
-        void InvitationAccepted(Player player);
+        void StartGame(GameParams gameParams);
 
         [OperationContract(IsOneWay = true)]
         void InvitationRefused(Player player);

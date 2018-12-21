@@ -76,14 +76,14 @@ namespace GameService
             return PlayersOnline.GetActivePlayers().Where(p => p.InGame == false).ToList();
         }
 
-        public void InvitePlayer(Player player, GameParams gameParams)
+        public void InvitePlayer(Player player, GameParams.GameSizes gameSize)
         {
             var invitingPlayer = PlayersOnline.GetGamePlayer(Client);
             var client = PlayersOnline.GetGameClient(player);
-            client?.InvitedBy(invitingPlayer, gameParams);
+            client?.InvitedBy(invitingPlayer, gameSize);
         }
 
-        public void AcceptInvitation(Player invitingPlayer)
+        public void AcceptInvitation(Player invitingPlayer, GameParams.GameSizes gameSize)
         {
             var invitingClient = PlayersOnline.GetGameClient(invitingPlayer);
             var acceptingPlayer = PlayersOnline.GetGamePlayer(Client);
@@ -95,8 +95,11 @@ namespace GameService
             NotifyPlayerUpdate(invitingPlayer);
             NotifyPlayerUpdate(acceptingPlayer);
 
+            var gameInitParams = new GameParams(invitingPlayer, acceptingPlayer, gameSize);           
+
             // callback
-            invitingClient.InvitationAccepted(acceptingPlayer);
+            invitingClient.StartGame(gameInitParams);
+            Client.StartGame(gameInitParams);
         }
 
         public void RefuseInvitation(Player player)

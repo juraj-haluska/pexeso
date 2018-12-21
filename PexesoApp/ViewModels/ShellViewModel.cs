@@ -56,15 +56,14 @@ namespace PexesoApp.ViewModels
         {
             var playersViewModel = new PlayersViewModel(_gameService, _eventHandler, loggedPlayer)
             {
-                GameCreated = (player, player1, gameParams) => { ShowGameScreen(); }
+                GameCreated = ShowGameScreen
             };
-
             ActivateItem(playersViewModel);
         }
 
-        private void ShowGameScreen()
+        private void ShowGameScreen(GameParams gameParams, Player me)
         {
-            var gameViewModel = new GameViewModel();
+            var gameViewModel = new GameViewModel(gameParams, me);
 
             ActivateItem(gameViewModel);
         }

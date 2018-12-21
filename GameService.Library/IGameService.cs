@@ -16,10 +16,10 @@ namespace GameService.Library
         List<Player> GetAvailablePlayers();
 
         [OperationContract]
-        void InvitePlayer(Player player, GameParams gameParams);
+        void InvitePlayer(Player player, GameParams.GameSizes gameSize);
 
         [OperationContract]
-        void AcceptInvitation(Player player);
+        void AcceptInvitation(Player player, GameParams.GameSizes gameSize);
 
         [OperationContract]
         void RefuseInvitation(Player player);

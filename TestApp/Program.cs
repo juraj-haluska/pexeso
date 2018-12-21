@@ -95,25 +95,22 @@ namespace TestApp
                         var player = new Player();
                         player.Id = id;
 
-                        var gameParams = new GameParams();
-                        gameParams.GameSize = GameParams.GameSizes.Size4X3;
-
-                        _client.InvitePlayer(player, gameParams);
+                        _client.InvitePlayer(player, GameParams.GameSizes.Size4X3);
                     }
                 }
             }
         }
 
-        public void InvitedBy(Player player, GameParams gameParams)
+        public void InvitedBy(Player player, GameParams.GameSizes gameSize)
         {
             Console.WriteLine($"You were invited by: {player.Name}, id: {player.Id}");
-            Console.WriteLine(gameParams.GameSize);
+            Console.WriteLine(gameSize);
 
             Console.WriteLine("accept? y/n");
             var key = Console.ReadKey().Key;
             if (key == ConsoleKey.Y)
             {
-                _client.AcceptInvitation(player);
+                _client.AcceptInvitation(player, gameSize);
             }
             else
             {
@@ -121,9 +118,9 @@ namespace TestApp
             }
         }
 
-        public void InvitationAccepted(Player player)
+        public void StartGame(GameParams gameParams)
         {
-            Console.WriteLine($"Invitation accepted by: {player.Name}, id: {player.Id}");
+            //Console.WriteLine($"Invitation accepted by: {player.Name}, id: {player.Id}");
         }
 
         public void InvitationRefused(Player player)

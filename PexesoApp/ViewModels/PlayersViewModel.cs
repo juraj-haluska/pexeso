@@ -14,7 +14,7 @@ namespace PexesoApp.ViewModels
         private readonly GameEventHandler _eventHandler;
         private Player _selectedPlayer;
 
-        public Action<Player, Player, GameParams> GameCreated { get; set; }
+        public Action<GameParams, Player> GameCreated { get; set; }
 
         public ObservableCollection<GameTypeViewModel> GameTypes { get; set; }
 
@@ -34,15 +34,14 @@ namespace PexesoApp.ViewModels
 
         private void RegisterEvents()
         {
-            _eventHandler.InvitedByEvent += (player, gameParams) =>
+            _eventHandler.InvitedByEvent += (player, gameSize) =>
             {
-                var message = MessageBox.Show($"You were invited by player {player.Name} / {gameParams.GameSize}", "Invitation",
+                var message = MessageBox.Show($"You were invited by player {player.Name} / {gameSize}", "Invitation",
                     MessageBoxButton.YesNo, MessageBoxImage.Question);
 
                 if (message == MessageBoxResult.Yes)
                 {
-                    _gameService.AcceptInvitation(player);
-                    GameCreated?.Invoke(_me, player, gameParams);
+                    _gameService.AcceptInvitation(player, gameSize);
                 }
                 else
                 {
@@ -61,10 +60,7 @@ namespace PexesoApp.ViewModels
                 Players.Remove(listedPlayer);
             };
 
-            _eventHandler.InvitationAcceptedEvent += player =>
-            {
-                GameCreated?.Invoke(_me, player, new GameParams { GameSize = SelectedGameType.GameSize });
-            };
+            _eventHandler.GameStartedEvent += gameParams => GameCreated?.Invoke(gameParams, _me);
 
             _eventHandler.NotifyPlayerUpdatedEvent += player =>
             {
@@ -92,7 +88,7 @@ namespace PexesoApp.ViewModels
 
         public void InvitePlayer()
         {
-            _gameService.InvitePlayer(SelectedPlayer, new GameParams { GameSize = SelectedGameType.GameSize });
+            _gameService.InvitePlayer(SelectedPlayer, SelectedGameType.GameSize);
         }
 
         protected override void OnDeactivate(bool close)
