@@ -37,6 +37,6 @@ namespace GameService.Library
         void GameTimeout();
 
         [OperationContract]
-        List<GameState> GetGamesStatistics();
+        List<GameStatistic> GetGamesStatistics();
     }
 }

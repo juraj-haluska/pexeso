@@ -7,6 +7,6 @@ namespace GameService.Data
     {
         public DbSet<Player> Players { get; set; }
 
-        public DbSet<GameState> Games { get; set; }
+        public DbSet<GameStatistic> Games { get; set; }
     }
 }

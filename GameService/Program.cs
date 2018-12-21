@@ -7,6 +7,7 @@ namespace GameService
     {
         static void Main(string[] args)
         {
+            // Database.SetInitializer(new DropCreateDatabaseAlways<GameContext>());
             ServiceHost selfHost = new ServiceHost(typeof(GameService));
             try
             {

@@ -4,6 +4,7 @@ using System.Linq;
 using System.ServiceModel;
 using GameService.Data;
 using GameService.Library;
+using GameService.Library.Utils;
 
 namespace GameService
 {
@@ -19,9 +20,16 @@ namespace GameService
 
         private IGameClient Client => OperationContext.Current.GetCallbackChannel<IGameClient>();
 
-        private GameState GetGameHistory(Player player)
+        private GameState GetGame(Player player)
         {
-            return Games.Single(game => game.FirstPlayer.Equals(player) || game.SecondPlayer.Equals(player));
+            try
+            {
+                return Games.Single(game => game.FirstPlayer.Equals(player) || game.SecondPlayer.Equals(player));
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public Player RegisterPlayer(string name, string password)
@@ -62,7 +70,7 @@ namespace GameService
                 {
                     if (p.Id != player.Id)
                     {
-                        PlayersOnline.GetGameClient(p).NotifyPlayerConnected(player);
+                        PlayersOnline.GetGameClient(p)?.NotifyPlayerConnected(player);
                     }
                 });
 
@@ -123,9 +131,6 @@ namespace GameService
 
         public void DisconnectPlayer(Player player)
         {
-            // try is here because we don't know in which store the player is
-            // player doesn't have to be in either
-            // TODO: do it the better way
             try
             {
                 // notify other players
@@ -147,7 +152,9 @@ namespace GameService
 
         public void RevealCardRequest(Player player, int cardIndex)
         {
-            var game = GetGameHistory(player);
+            var game = GetGame(player);
+
+            if (game == null) return;
 
             if (game.RevealedCardIndex != null)
             {
@@ -182,7 +189,7 @@ namespace GameService
         public void SendMessage(string message)
         {
             var sendingPlayer = PlayersOnline.GetGamePlayer(Client);
-            var game = GetGameHistory(sendingPlayer);
+            var game = GetGame(sendingPlayer);
             var receivingPlayer = game.FirstPlayer.Equals(sendingPlayer) ? game.SecondPlayer : game.FirstPlayer;
             PlayersOnline.GetGameClient(receivingPlayer).IncomingMessage(sendingPlayer, message);
             PlayersOnline.GetGameClient(sendingPlayer).IncomingMessage(sendingPlayer, message);
@@ -193,7 +200,7 @@ namespace GameService
             var player = PlayersOnline.GetGamePlayer(Client);
 
             if (player == null) return;
-            var game = GetGameHistory(player);
+            var game = GetGame(player);
 
             if (game == null) return;
             var client1 = PlayersOnline.GetGameClient(game.FirstPlayer);
@@ -225,7 +232,15 @@ namespace GameService
 
             using (var ctx = new GameContext())
             {
-                ctx.Games.Add(game);
+                ctx.Games.Add(new GameStatistic
+                {
+                    FirstPlayer = game.FirstPlayer.Name,
+                    SecondPlayer = game.SecondPlayer.Name,
+                    FirstPlayerScore = game.FirstPlayerScore,
+                    SecondPlayerScore = game.SecondPlayerScore,
+                    GameDuration = (int) (game.GameEnd - game.GameBegin).TotalSeconds,
+                    GameSize = Utils.GetGameTypeName(game.GameSize)
+                });
                 ctx.SaveChanges();
             }
 
@@ -240,7 +255,7 @@ namespace GameService
             });
         }
 
-        public List<GameState> GetGamesStatistics()
+        public List<GameStatistic> GetGamesStatistics()
         {
             using (var ctx = new GameContext())
             {

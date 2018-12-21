@@ -47,7 +47,7 @@
   <ItemGroup>
     <Compile Include="GameParams.cs" />
     <Compile Include="GameResult.cs" />
-    <Compile Include="GameState.cs" />
+    <Compile Include="GameStatistic.cs" />
     <Compile Include="IGameClient.cs" />
     <Compile Include="IGameService.cs" />
     <Compile Include="Player.cs" />

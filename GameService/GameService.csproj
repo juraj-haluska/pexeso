@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GameState.cs" />
     <Compile Include="PlayerStore.cs" />
     <Compile Include="Data\GameContext.cs" />
     <Compile Include="GameService.cs" />

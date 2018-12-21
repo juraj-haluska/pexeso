@@ -66,9 +66,14 @@ namespace PexesoApp.ViewModels
             var gameViewModel = new GameViewModel(gameParams, me, _gameService, _eventHandler)
             {
                 Exit = () => TryClose(),
-                GameFinished = () => TryClose()
+                GameFinished = ShowStatisticsScreen
             };
             ActivateItem(gameViewModel);
+        }
+
+        private void ShowStatisticsScreen()
+        {
+            ActivateItem(new StatisticsViewModel(_gameService));
         }
     }
 }

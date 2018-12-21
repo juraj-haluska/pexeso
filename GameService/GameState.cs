@@ -1,23 +1,20 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using GameService.Library;
+using GameService.Library.Utils;
 
-namespace GameService.Library
+namespace GameService
 {
     public class GameState
     {
-        public int Id { get; set; }
-
         public Player FirstPlayer { get; set; }
 
         public Player SecondPlayer { get; set; }
 
         public GameParams.GameSizes GameSize { get; set; }
 
-        [NotMapped]
         public int[] Map { get; }
 
-        [NotMapped]
         public int? RevealedCardIndex { get; set; }
 
         public int FirstPlayerScore { get; set; }
@@ -39,7 +36,7 @@ namespace GameService.Library
             GameSize = gameSize;
 
             // generate random map
-            Utils.Utils.GetGameSize(gameSize, out var rows, out var cols);
+            Utils.GetGameSize(gameSize, out var rows, out var cols);
             var rand = new Random();
             var elements = Enumerable.Range(1, rows * cols / 2).ToList();
             Map = elements.Concat(elements).OrderBy(x => rand.Next()).ToArray();
