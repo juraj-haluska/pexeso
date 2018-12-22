@@ -1,0 +1,49 @@
+﻿@model List<GameService.Library.GameStatistic>
+
+@{
+    ViewBag.Title = "Game Statistics";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">First player</th>
+            <th scope="col">Second player</th>
+            <th scope="col">First player score</th>
+            <th scope="col">Second player score</th>
+            <th scope="col">Game size</th>
+            <th scope="col">Game duration</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr scope="row">
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FirstPlayer)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SecondPlayer)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FirstPlayerScore)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SecondPlayerScore)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GameSize)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GameDuration)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

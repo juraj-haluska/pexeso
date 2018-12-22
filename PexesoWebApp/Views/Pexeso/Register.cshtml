@@ -1,0 +1,32 @@
+﻿@model GameService.Library.Player
+
+@{
+    ViewBag.Title = "Register";
+}
+
+<h2>@ViewBag.Title.</h2>
+
+@using (Html.BeginForm("Register", "Pexeso", FormMethod.Post))
+{
+    <table class="table">
+        <tr>
+            <th>Register new player</th>
+        </tr>
+        <tr>
+            <td>Name:</td>
+            <td>
+                @Html.TextBoxFor(player => player.Name)
+            </td>
+        </tr>
+        <tr>
+            <td>Password: </td>
+            <td>
+                @Html.PasswordFor(player => player.Password)
+            </td>
+        </tr>     
+        <tr>
+            <td></td>
+            <td><input type="submit" value="Submit"/></td>
+        </tr>
+    </table>
+}

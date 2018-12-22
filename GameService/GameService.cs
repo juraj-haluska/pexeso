@@ -34,6 +34,11 @@ namespace GameService
 
         public Player RegisterPlayer(string name, string password)
         {
+            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(password))
+            {
+                return null;
+            }
+
             // check if name and password are valid
             if (name.Length < PlayerNameMinLength || password.Length < PlayerPasswordMinLength)
             {

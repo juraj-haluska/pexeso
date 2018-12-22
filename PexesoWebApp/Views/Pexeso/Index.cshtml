@@ -1,0 +1,14 @@
+﻿@{
+    ViewBag.Title = "Pexeso homepage";
+}
+
+<h2>@ViewBag.Title</h2>
+<p>
+    Pexeso je karetní hra pro nejméně dva hráče zaměřená na paměť a soustředění. Její původní název je Memory (anglicky Paměť).
+    Název PEXESO je český akronym vzniklý ze sousloví PEKELNĚ SE SOUSTŘEĎ.
+    Hraje se se speciální sadou karet. Balíček se skládá ze sudého počtu, nejčastěji 64 karet, které tvoří dvojice.
+    Cílem hry je nalézt co nejvíce dvojic.
+</p>
+
+<button type="button" class="btn" onclick="location.href='@Url.Action("Register", "Pexeso")'" >Register new player</button>
+<button type="button" class="btn" onclick="location.href='@Url.Action("Statistics", "Pexeso")'" >Game statistics</button>
