@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.ServiceModel;
 using GameService.Library;
+using GameService.Library.Models;
 
-namespace GameService
+namespace GameService.Utils
 {
     // this class maps and manages connections with players
     public class PlayerStore

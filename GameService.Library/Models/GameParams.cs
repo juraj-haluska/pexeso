@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace GameService.Library
+namespace GameService.Library.Models
 {
     [DataContract]
     public class GameParams

@@ -1,4 +1,4 @@
-﻿namespace GameService.Library
+﻿namespace GameService.Library.Models
 {
     public enum GameResult
     {

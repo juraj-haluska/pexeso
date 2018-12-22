@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using Caliburn.Micro;
 using GameService.Library;
+using GameService.Library.Models;
 using GameService.Library.Utils;
 
 namespace PexesoApp.ViewModels

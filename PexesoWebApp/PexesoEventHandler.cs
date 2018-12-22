@@ -1,5 +1,6 @@
 ﻿using System;
 using GameService.Library;
+using GameService.Library.Models;
 
 namespace PexesoWebApp
 {

@@ -1,6 +1,7 @@
 ﻿using System.ServiceModel;
 using System.Web.Mvc;
 using GameService.Library;
+using GameService.Library.Models;
 
 namespace PexesoWebApp.Controllers
 {

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Caliburn.Micro;
 using GameService.Library;
+using GameService.Library.Models;
 
 namespace PexesoApp.ViewModels
 {

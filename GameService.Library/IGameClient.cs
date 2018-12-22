@@ -1,4 +1,5 @@
 ﻿using System.ServiceModel;
+using GameService.Library.Models;
 
 namespace GameService.Library
 {

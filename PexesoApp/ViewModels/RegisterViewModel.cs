@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Threading.Tasks;
+using System.Windows;
 using Caliburn.Micro;
 using GameService.Library;
 using Action = System.Action;
@@ -44,22 +45,25 @@ namespace PexesoApp.ViewModels
         public bool CanRegister => PlayerName?.Length >= MinNameLength && PlayerPassword?.Length >= MinPassLength;
  
     
-        public void Register()
+        public async void Register()
         {
-            var registeredPlayer = _gameService.RegisterPlayer(PlayerName, PlayerPassword);
-
-            if (registeredPlayer != null)
+            await Task.Run(() =>
             {
-                MessageBox.Show($"Player {registeredPlayer.Name} has been registered", "", MessageBoxButton.OK, 
-                    MessageBoxImage.Information);
+                var registeredPlayer = _gameService.RegisterPlayer(PlayerName, PlayerPassword);
 
-                ExitScreen?.Invoke();
-            }
-            else
-            {
-                MessageBox.Show($"Name {PlayerName} is already occupied.", "", MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-            }
+                if (registeredPlayer != null)
+                {
+                    MessageBox.Show($"Player {registeredPlayer.Name} has been registered", "", MessageBoxButton.OK,
+                        MessageBoxImage.Information);
+
+                    ExitScreen?.Invoke();
+                }
+                else
+                {
+                    MessageBox.Show($"Name {PlayerName} is already occupied.", "", MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                }
+            });
         }
 
         public void Cancel()

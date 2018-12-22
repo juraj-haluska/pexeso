@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ServiceModel;
+using GameService.Library.Models;
 
 namespace GameService.Library
 {

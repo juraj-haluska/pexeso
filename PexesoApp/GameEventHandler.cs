@@ -1,6 +1,7 @@
 ﻿using System.ServiceModel;
 using System.Windows.Threading;
 using GameService.Library;
+using GameService.Library.Models;
 
 namespace PexesoApp
 {

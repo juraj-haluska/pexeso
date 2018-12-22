@@ -66,9 +66,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GameState.cs" />
-    <Compile Include="PlayerStore.cs" />
-    <Compile Include="Data\GameContext.cs" />
+    <Compile Include="Models\GameState.cs" />
+    <Compile Include="Utils\PlayerStore.cs" />
+    <Compile Include="Models\GameContext.cs" />
     <Compile Include="GameService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

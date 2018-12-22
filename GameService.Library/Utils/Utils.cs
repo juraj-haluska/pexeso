@@ -1,4 +1,6 @@
-﻿namespace GameService.Library.Utils
+﻿using GameService.Library.Models;
+
+namespace GameService.Library.Utils
 {
     public static class Utils
     {

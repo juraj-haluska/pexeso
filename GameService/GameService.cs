@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
-using GameService.Data;
 using GameService.Library;
-using GameService.Library.Utils;
+using GameService.Library.Models;
+using GameService.Models;
+using GameService.Utils;
 
 namespace GameService
 {
@@ -261,7 +262,7 @@ namespace GameService
                     FirstPlayerScore = game.FirstPlayerScore,
                     SecondPlayerScore = game.SecondPlayerScore,
                     GameDuration = (int) (game.GameEnd - game.GameBegin).TotalSeconds,
-                    GameSize = Utils.GetGameTypeName(game.GameSize)
+                    GameSize = Library.Utils.Utils.GetGameTypeName(game.GameSize)
                 });
                 ctx.SaveChanges();
             }

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
-using GameService.Library;
+using GameService.Library.Models;
 using GameService.Library.Utils;
 
-namespace GameService
+namespace GameService.Models
 {
     public class GameState
     {
@@ -36,7 +36,7 @@ namespace GameService
             GameSize = gameSize;
 
             // generate random map
-            Utils.GetGameSize(gameSize, out var rows, out var cols);
+            Library.Utils.Utils.GetGameSize(gameSize, out var rows, out var cols);
             var rand = new Random();
             var elements = Enumerable.Range(1, rows * cols / 2).ToList();
             Map = elements.Concat(elements).OrderBy(x => rand.Next()).ToArray();

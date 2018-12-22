@@ -1,7 +1,7 @@
 ﻿using System.Data.Entity;
-using GameService.Library;
+using GameService.Library.Models;
 
-namespace GameService.Data
+namespace GameService.Models
 {
     public class GameContext : DbContext
     {

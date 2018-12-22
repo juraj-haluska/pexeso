@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows;
 using Caliburn.Micro;
 using GameService.Library;
+using GameService.Library.Models;
 using Action = System.Action;
 
 namespace PexesoApp.ViewModels
@@ -43,19 +45,22 @@ namespace PexesoApp.ViewModels
 
         public bool CanLogin => PlayerName?.Length >= 5 && PlayerPassword?.Length >= 5;
 
-        public void Login()
+        public async void Login()
         {
-            var player = _gameService.ConnectPlayer(PlayerName, PlayerPassword);
+            await Task.Run(() =>
+            {
+                var player = _gameService.ConnectPlayer(PlayerName, PlayerPassword);
 
-            if (player != null)
-            {
-                PlayerLoggedIn(player);
-            }
-            else
-            {
-                MessageBox.Show("Wrong name or password", "", MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-            }
+                if (player != null)
+                {
+                    PlayerLoggedIn(player);
+                }
+                else
+                {
+                    MessageBox.Show("Wrong name or password", "", MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                }
+            });
         }
 
         public void Cancel()

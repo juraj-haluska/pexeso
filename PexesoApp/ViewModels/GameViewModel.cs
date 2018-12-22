@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using PexesoApp.Views;
 using System.Windows.Threading;
+using GameService.Library.Models;
 using GameService.Library.Utils;
 using Action = System.Action;
 

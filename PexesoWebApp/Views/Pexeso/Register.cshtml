@@ -1,10 +1,11 @@
-﻿@model GameService.Library.Player
+﻿@model GameService.Library.Models.Player
 
 @{
     ViewBag.Title = "Register";
 }
 
 <h2>@ViewBag.Title.</h2>
+<p>Name and password must be at least 5 characters long.</p>
 
 @using (Html.BeginForm("Register", "Pexeso", FormMethod.Post))
 {
