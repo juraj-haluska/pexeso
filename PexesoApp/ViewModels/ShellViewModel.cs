@@ -26,7 +26,7 @@ namespace PexesoApp.ViewModels
 
         private void ShowStartScreen()
         {
-            var startViewModel = new StartViewModel(_gameService)
+            var startViewModel = new StartViewModel
             {
                 Login = ShowLoginScreen, Register = ShowRegisterScreen
             };

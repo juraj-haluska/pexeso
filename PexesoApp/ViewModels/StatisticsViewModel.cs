@@ -4,7 +4,7 @@ using GameService.Library;
 
 namespace PexesoApp.ViewModels
 {
-    class StatisticsViewModel : Screen
+    public class StatisticsViewModel : Screen
     {
         public List<GameStatistic> Statistics { get; }
 

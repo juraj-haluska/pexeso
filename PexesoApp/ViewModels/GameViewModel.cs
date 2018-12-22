@@ -16,6 +16,7 @@ namespace PexesoApp.ViewModels
     public class GameViewModel : Screen
     {
         private const int Timeout = 60;
+        private const int CardSize = 50;
 
         private readonly GameParams _gameParams;
         private readonly Player _me;
@@ -25,12 +26,24 @@ namespace PexesoApp.ViewModels
         private readonly List<RoutedEventHandler> _handlers = new List<RoutedEventHandler>();
         private readonly DispatcherTimer _timer = new DispatcherTimer();
         private string _message;
+        private bool _myTurn;
 
         public Action Exit { get; set; }
 
         public Action GameFinished { get; set; }
 
-        public bool MyTurn { get; set; }
+        public bool MyTurn
+        {
+            get => _myTurn;
+            set
+            {
+                _myTurn = value;
+                TurnText = value ? "Your turn" : "Wait for opponent";
+                NotifyOfPropertyChange(() => TurnText);
+            }
+        }
+
+        public string TurnText { get; set; }
 
         public string Message
         {
@@ -87,7 +100,7 @@ namespace PexesoApp.ViewModels
             // populate grid
             foreach (var i in Enumerable.Range(0, rows * cols))
             {
-                var button = new Button {Width = 50, Height = 50};
+                var button = new Button {Width = CardSize, Height = CardSize };
 
                 var row = i / cols;
                 var col = i % cols;
@@ -151,18 +164,26 @@ namespace PexesoApp.ViewModels
             _eventHandler.IncomingMessageEvent += (player, message) => Messages.Add($"{player.Name}: {message}");
 
             _eventHandler.GameTimeoutEvent += () =>
-            {
-                _gameService.DisconnectPlayer(_me);
+            {              
                 MessageBox.Show("Game has ended (timeout).", "Game ended", MessageBoxButton.OK, MessageBoxImage.Warning);
                 Exit();
+                _gameService.DisconnectPlayer(_me);
             };
 
             _eventHandler.GameFinishedEvent += result =>
-            {
-                _gameService.DisconnectPlayer(_me);
+            {               
                 var message = Utils.GetGameResult(result);
                 MessageBox.Show($"The game has ended. You are {message}.", "Game ended", MessageBoxButton.OK, MessageBoxImage.Information);
                 GameFinished();
+                _gameService.DisconnectPlayer(_me);
+            };
+
+            _eventHandler.OpponentLeftEvent += () =>
+            {
+                _gameService.DisconnectPlayer(_me);
+                MessageBox.Show("Your opponent has left the game.", "Game ended", MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                Exit();
             };
 
             _timer.Tick += (sender, args) =>
@@ -190,6 +211,15 @@ namespace PexesoApp.ViewModels
         private void ResetTimer()
         {
             _timer.Interval = TimeSpan.FromSeconds(Timeout);
+        }
+
+        protected override void OnViewAttached(object view, object context)
+        {
+            var window = Window.GetWindow((DependencyObject) GetView());
+            if (window != null)
+            {
+                window.Closed += (sender, args) => _gameService.DisconnectPlayer(_me);
+            }
         }
     }
 }

@@ -107,6 +107,8 @@ namespace GameService
             lock (_lock)
             {
                 var position = _players.FindIndex(p => p.Id == player.Id);
+                if (position < 0) return null;
+
                 var clientState = (ICommunicationObject)_clients[position];
 
                 if (clientState.State == CommunicationState.Opened)

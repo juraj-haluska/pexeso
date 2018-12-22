@@ -6,7 +6,7 @@ using Action = System.Action;
 
 namespace PexesoApp.ViewModels
 {
-    class LoginViewModel : Screen
+    public class LoginViewModel : Screen
     {
         private readonly IGameService _gameService;
         private string _playerName;
@@ -53,7 +53,7 @@ namespace PexesoApp.ViewModels
             }
             else
             {
-                MessageBox.Show($"Wrong name or password", "", MessageBoxButton.OK,
+                MessageBox.Show("Wrong name or password", "", MessageBoxButton.OK,
                     MessageBoxImage.Error);
             }
         }

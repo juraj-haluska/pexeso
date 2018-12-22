@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 
 namespace GameService.Library
 {
+    [DataContract]
     public class GameParams
     {
         public enum GameSizes

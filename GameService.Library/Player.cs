@@ -30,7 +30,7 @@ namespace GameService.Library
 
         protected bool Equals(Player other)
         {
-            return Id == other.Id;
+            return Id == other.Id && string.Equals(Name, other.Name) && string.Equals(Password, other.Password);
         }
 
         public override bool Equals(object obj)
@@ -43,7 +43,13 @@ namespace GameService.Library
 
         public override int GetHashCode()
         {
-            return Id.GetHashCode();
+            unchecked
+            {
+                var hashCode = Id.GetHashCode();
+                hashCode = (hashCode * 397) ^ (Name != null ? Name.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (Password != null ? Password.GetHashCode() : 0);
+                return hashCode;
+            }
         }
     }
 }

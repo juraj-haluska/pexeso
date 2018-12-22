@@ -9,7 +9,7 @@ using GameService.Library.Utils;
 
 namespace PexesoApp.ViewModels
 {
-    class PlayersViewModel : Screen
+    public class PlayersViewModel : Screen
     {
         private readonly IGameService _gameService;
         private readonly Player _me;
@@ -33,6 +33,24 @@ namespace PexesoApp.ViewModels
         }
 
         public GameTypeViewModel SelectedGameType { get; set; }
+
+        public PlayersViewModel(IGameService gameService, GameEventHandler eventHandler, Player player)
+        {
+            _gameService = gameService;
+            _eventHandler = eventHandler;
+            _me = player;
+
+            Players = new ObservableCollection<Player>(_gameService.GetAvailablePlayers().Where(p => p.Id != _me.Id));
+            RegisterEvents();
+
+            foreach (var value in Enum.GetValues(typeof(GameParams.GameSizes)))
+            {
+                var gameSize = (GameParams.GameSizes) value;
+                GameTypes.Add(new GameTypeViewModel { GameSize = gameSize, Name = Utils.GetGameTypeName(gameSize) });
+            }
+
+            SelectedGameType = GameTypes[0];
+        }
 
         private void RegisterEvents()
         {
@@ -86,24 +104,6 @@ namespace PexesoApp.ViewModels
             };
         }
 
-        public PlayersViewModel(IGameService gameService, GameEventHandler eventHandler, Player player)
-        {
-            _gameService = gameService;
-            _eventHandler = eventHandler;
-            _me = player;
-
-            Players = new ObservableCollection<Player>(_gameService.GetAvailablePlayers().Where(p => p.Id != _me.Id));
-            RegisterEvents();
-
-            foreach (var value in Enum.GetValues(typeof(GameParams.GameSizes)))
-            {
-                var gameSize = (GameParams.GameSizes) value;
-                GameTypes.Add(new GameTypeViewModel { GameSize = gameSize, Name = Utils.GetGameTypeName(gameSize) });
-            }
-
-            SelectedGameType = GameTypes[0];
-        }
-
         public bool CanInvitePlayer => SelectedPlayer != null && SelectedGameType != null;
 
         public bool CanInviteRandom => Players.Count > 0;
@@ -118,6 +118,15 @@ namespace PexesoApp.ViewModels
             if (Players.Count <= 0) return;
             SelectedPlayer = Players[new Random().Next(0, Players.Count - 1)];
             InvitePlayer();
+        }
+
+        protected override void OnViewAttached(object view, object context)
+        {
+            var window = Window.GetWindow((DependencyObject)GetView());
+            if (window != null)
+            {
+                window.Closed += (sender, args) => _gameService.DisconnectPlayer(_me);
+            }
         }
     }
 }

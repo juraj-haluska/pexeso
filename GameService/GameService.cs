@@ -133,7 +133,7 @@ namespace GameService
         {
             try
             {
-                // notify other players
+                // notify players
                 PlayersOnline.GetActivePlayers().ForEach(p =>
                 {
                     if (p.Id != player.Id)
@@ -141,6 +141,15 @@ namespace GameService
                         PlayersOnline.GetGameClient(p).NotifyPlayerDisconnected(player);
                     }
                 });
+
+                var game = GetGame(player);
+                if (game != null)
+                {
+                    var otherPlayer = game.FirstPlayer.Equals(player) ? game.SecondPlayer : game.FirstPlayer;
+                    var otherClient = PlayersOnline.GetGameClient(otherPlayer);
+                    otherClient?.OpponentLeft();
+                    Games.Remove(game);
+                }
 
                 PlayersOnline.RemovePlayer(player);
             }

@@ -39,5 +39,8 @@ namespace GameService.Library
 
         [OperationContract(IsOneWay = true)]
         void GameFinished(GameResult result);
+
+        [OperationContract(IsOneWay = true)]
+        void OpponentLeft();
     }
 }

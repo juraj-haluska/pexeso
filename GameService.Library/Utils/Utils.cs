@@ -9,9 +9,9 @@
                 case GameParams.GameSizes.Size3X2:
                     return "3 x 2";
                 case GameParams.GameSizes.Size4X3:
-                    return "3 x 2";
+                    return "4 x 3";
                 case GameParams.GameSizes.Size4X4:
-                    return "4 x 4"; ;
+                    return "4 x 4";
                 case GameParams.GameSizes.Size5X4:
                     return "5 x 4";
                 case GameParams.GameSizes.Size6X5:
@@ -22,7 +22,7 @@
                     return "7 x 6";
                 case GameParams.GameSizes.Size8X7:
                     return "8 x 7";
-                case GameParams.GameSizes.Size8X8:
+                // case GameParams.GameSizes.Size8X8:
                 default:
                     return "8 x 8";
             }
@@ -43,7 +43,7 @@
                 case GameParams.GameSizes.Size4X4:
                     rows = 4;
                     cols = 4;
-                    return; ;
+                    return;
                 case GameParams.GameSizes.Size5X4:
                     rows = 5;
                     cols = 4;
@@ -64,7 +64,7 @@
                     rows = 8;
                     cols = 7;
                     return;
-                case GameParams.GameSizes.Size8X8:
+                // case GameParams.GameSizes.Size8X8:
                 default:
                     rows = 8;
                     cols = 8;
@@ -80,7 +80,7 @@
                     return "winner";
                 case GameResult.Lose:
                     return "looser";
-                case GameResult.FiftyFifty:  
+                // case GameResult.FiftyFifty:  
                 default:
                     return "as good as your opponent";
             }
