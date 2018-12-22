@@ -32,6 +32,14 @@ namespace GameService
             }
         }
 
+        public List<Player> GetRegisteredPlayers()
+        {
+            using (var ctx = new GameContext())
+            {
+                return ctx.Players.ToList();
+            }           
+        }
+
         public Player RegisterPlayer(string name, string password)
         {
             if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(password))

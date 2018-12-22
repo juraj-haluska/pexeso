@@ -211,6 +211,7 @@
     <Content Include="Views\Pexeso\RegistrationError.cshtml" />
     <Content Include="Views\Pexeso\RegistrationSuccess.cshtml" />
     <Content Include="Views\Pexeso\ServiceNotAvailable.cshtml" />
+    <Content Include="Views\Pexeso\Players.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

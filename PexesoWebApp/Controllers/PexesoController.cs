@@ -1,5 +1,4 @@
-﻿using System;
-using System.ServiceModel;
+﻿using System.ServiceModel;
 using System.Web.Mvc;
 using GameService.Library;
 
@@ -48,6 +47,20 @@ namespace PexesoWebApp.Controllers
             try
             {   
                 return View(service.GetGamesStatistics());
+            }
+            catch
+            {
+                return View("ServiceNotAvailable");
+            }
+        }
+
+        public ActionResult Players()
+        {
+            var channelFactory = new DuplexChannelFactory<IGameService>(Ctx, "GameServiceEndPoint");
+            var service = channelFactory.CreateChannel();
+            try
+            {
+                return View(service.GetRegisteredPlayers());
             }
             catch
             {
