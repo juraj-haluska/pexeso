@@ -30,7 +30,7 @@ namespace GameService.Library
 
         protected bool Equals(Player other)
         {
-            return Id == other.Id && string.Equals(Name, other.Name) && string.Equals(Password, other.Password);
+            return Id == other.Id;
         }
 
         public override bool Equals(object obj)
